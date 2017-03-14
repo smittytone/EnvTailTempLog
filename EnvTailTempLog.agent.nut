@@ -4,19 +4,8 @@
 #require "Dweetio.class.nut:1.0.1"
 #require "Rocky.class.nut:2.0.0"
 
-// GLOBALS
-local dweeter = null;
-local api = null;
-local savedData = null;
-
-local myDweetName = "";
-local myFreeboardURL = "";
-
-local newstart = false;
-local debug = true;
-
 // CONSTANTS
-const htmlString = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
+const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
 <html>
     <head>
         <title>Environment Data</title>
@@ -138,7 +127,7 @@ const htmlString = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
 // FUNCTIONS
 function postReading(reading) {
     // Dweet the sensor data
-    dweeter.dweet(myDweetName, reading, function(response) {
+    dweeter.dweet(dweetName, reading, function(response) {
         if (response.statuscode != 200) {
             if (debug) server.error("Could not Dweet data at " + time() + " (Code: " + response.statuscode + ")");
         }
@@ -165,11 +154,22 @@ function postReading(reading) {
 	}
 }
 
+// GLOBALS
+local dweeter = null;
+local api = null;
+local savedData = null;
+
+local dweetName = "";
+local freeboardLink = "";
+
+local newstart = false;
+local debug = true;
+
 // START OF PROGRAM
 
 // To use, un-comment and complete the following line:
-// myDweetName = "<YOUR_DWEET_DEVICE_NAME>";
-// myFreeboardURL = "<YOUR_FREEBOARD_IO_URL>";
+// dweetName = "<YOUR_DWEET_DEVICE_NAME>";
+// freeboardLink = "<YOUR_FREEBOARD_IO_URL>";
 
 // And comment out the following line:
 #import "../../../Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
@@ -181,7 +181,8 @@ api = Rocky();
 // Set up the app's API
 api.get("/", function(context) {
 	// Root request: just return standard HTML string
-	context.send(200, format(htmlString, http.agenturl(), myFreeboardURL, http.agenturl()));
+	local url = http.agenturl();
+	context.send(200, format(HTML_STRING, url, freeboardLink, url));
 });
 
 api.get("/state", function(context) {
@@ -195,8 +196,8 @@ api.post("/location", function(context) {
 	if ("location" in data) {
 		if (data.location != "") {
 			savedData.locale = data.location;
-			local parts = split(myDweetName, "-");
-			myDweetName = parts[0] + "-" + savedData.locale;
+			local parts = split(dweetName, "-");
+			dweetName = parts[0] + "-" + savedData.locale;
 			context.send(200, { locale = savedData.locale });
 			local result = server.save(savedData);
 			if (result != 0) server.error("Could not back up data");
@@ -257,7 +258,7 @@ api.put("/display", function(context) {
 
 api.get("/display", function(context) {
 	// Return a list of registered displays
-	context.send(200, format(htmlString, http.agenturl(), myFreeboardURL, http.agenturl()));
+	context.send(200, format(HTML_STRING, http.agenturl(), freeboardLink, http.agenturl()));
 });
 
 // POST at /debug updates the passed setting(s)
@@ -299,7 +300,7 @@ savedData.displays <- [];
 local backup = server.load();
 if (backup.len() != 0) {
 	savedData = backup;
-	myDweetName = myDweetName + "-" + savedData.locale;
+	dweetName = dweetName + "-" + savedData.locale;
 } else {
 	local result = server.save(savedData);
 	if (result != 0) server.error("Could not back up data");
