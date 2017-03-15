@@ -29,7 +29,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
     <body>
         <div class='container' style='padding: 20px'>
             <div class='container' style='border: 2px solid white'>
-                <h2 class='text-center'>Environment Data</h2>
+                <h2 class='text-center'>Environment Data <span></span></h2>
                 <div class='current-status'>
                     <h4 class='temp-status' align='center'>Current Temperature: <span></span>&deg;C</h4>
                     <h4 class='humid-status' align='center'>Current Humidity: <span></span> per cent</h4>
@@ -72,6 +72,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
             }
 
             function updateReadout(data) {
+                $('.text-center span').text(data.vers);
                 $('.temp-status span').text(data.temp);
                 $('.humid-status span').text(data.humid);
                 $('.locale-status span').text(data.locale);
@@ -124,6 +125,17 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
     </body>
 </html>";
 
+// GLOBALS
+local dweeter = null;
+local api = null;
+local savedData = null;
+local dweetName = "";
+local freeboardLink = "";
+local appName = "EnvTempLog";
+local appVersion = "1.1";
+local newstart = false;
+local debug = true;
+
 // FUNCTIONS
 function postReading(reading) {
     // Dweet the sensor data
@@ -131,41 +143,30 @@ function postReading(reading) {
         if (response.statuscode != 200) {
             if (debug) server.error("Could not Dweet data at " + time() + " (Code: " + response.statuscode + ")");
         } else {
-            if (debug) server.log("Dweeted data for " + myDweetName);
+            if (debug) server.log("Dweeted data for " + dweetName);
         }
     });
 
     // Save it for presentation too
     savedData.temp = format("%.2f", reading.temp);
-	savedData.humid = format("%.2f", reading.humid);
-	local result = server.save(savedData);
-	if (result != 0) server.error("Could not back up data");
+    savedData.humid = format("%.2f", reading.humid);
+    local result = server.save(savedData);
+    if (result != 0) server.error("Could not back up data");
 
-	// Inform registered displays
-	if (savedData.displays.len() > 0) {
-		local body = { "temp" : savedData.temp };
-		body = http.jsonencode(body);
-		foreach (display in savedData.displays) {
-			local req = http.post(display + "/data", { "content-type" : "application/json" }, body);
-			req.sendasync(function(response) {
-				if (response.statuscode == 200) {
-					if (debug) server.log("Device " + response.body + " ACKs receipt of data");
-				}
-			});
-		}
-	}
+    // Inform registered displays
+    if (savedData.displays.len() > 0) {
+        local body = { "temp" : savedData.temp };
+        body = http.jsonencode(body);
+        foreach (display in savedData.displays) {
+            local req = http.post(display + "/data", { "content-type" : "application/json" }, body);
+            req.sendasync(function(response) {
+                if (response.statuscode == 200) {
+                    if (debug) server.log("Device " + response.body + " ACKs receipt of data");
+                }
+            });
+        }
+    }
 }
-
-// GLOBALS
-local dweeter = null;
-local api = null;
-local savedData = null;
-
-local dweetName = "";
-local freeboardLink = "";
-
-local newstart = false;
-local debug = true;
 
 // START OF PROGRAM
 
@@ -182,86 +183,90 @@ api = Rocky();
 
 // Set up the app's API
 api.get("/", function(context) {
-	// Root request: just return standard HTML string
-	local url = http.agenturl();
-	context.send(200, format(HTML_STRING, url, freeboardLink, url));
+    // Root request: just return standard HTML string
+    local url = http.agenturl();
+    context.send(200, format(HTML_STRING, url, freeboardLink, url));
 });
 
 api.get("/state", function(context) {
-	// Request for data from /state endpoint
-	context.send(200, { "temp" : savedData.temp, "humid" : savedData.humid, "locale" : savedData.locale, "debug" : debug });
+    // Request for data from /state endpoint
+    context.send(200, { "temp" : savedData.temp,
+                        "humid" : savedData.humid,
+                        "locale" : savedData.locale,
+                        "debug" : debug,
+                        "vers" : appVersion });
 });
 
 api.post("/location", function(context) {
-	// Sensor location string submission at the /location endpoint
-	local data = http.jsondecode(context.req.rawbody);
-	if ("location" in data) {
-		if (data.location != "") {
-			savedData.locale = data.location;
-			local parts = split(dweetName, "-");
-			dweetName = parts[0] + "-" + savedData.locale;
-			if (debug) server.log("New Dweetname: " + dweetName);
-			context.send(200, { locale = savedData.locale });
-			local result = server.save(savedData);
-			if (result != 0) server.error("Could not back up data");
-			return;
-		}
-	}
+    // Sensor location string submission at the /location endpoint
+    local data = http.jsondecode(context.req.rawbody);
+    if ("location" in data) {
+        if (data.location != "") {
+            savedData.locale = data.location;
+            local parts = split(dweetName, "-");
+            dweetName = parts[0] + "-" + savedData.locale;
+            if (debug) server.log("New Dweetname: " + dweetName);
+            context.send(200, { locale = savedData.locale });
+            local result = server.save(savedData);
+            if (result != 0) server.error("Could not back up data");
+            return;
+        }
+    }
 
-	context.send(200, "OK");
+    context.send(200, "OK");
 });
 
 api.post("/display", function(context) {
-	// Register a display unit
-	local data = http.jsondecode(context.req.rawbody);
-	if ("id" in data) {
-		server.log("Registering ID: " + data.id);
-		if (data.id != "") {
-			local gotFlag = false;
-			foreach (item in savedData.displays) {
-				if (item == data.id) {
-					gotFlag = true;
-					break;
-				}
-			}
+    // Register a display unit
+    local data = http.jsondecode(context.req.rawbody);
+    if ("id" in data) {
+        server.log("Registering ID: " + data.id);
+        if (data.id != "") {
+            local gotFlag = false;
+            foreach (item in savedData.displays) {
+                if (item == data.id) {
+                    gotFlag = true;
+                    break;
+                }
+            }
 
-			if (!gotFlag) {
-				// This is a new display, so add it to the list
-				savedData.displays.append(id);
-			}
+            if (!gotFlag) {
+                // This is a new display, so add it to the list
+                savedData.displays.append(id);
+            }
 
-			context.send(200, { "id" : data.id });
-			local result = server.save(savedData);
-			if (result != 0) server.error("Could not back up data");
-			return;
-		}
-	}
+            context.send(200, { "id" : data.id });
+            local result = server.save(savedData);
+            if (result != 0) server.error("Could not back up data");
+            return;
+        }
+    }
 });
 
 api.put("/display", function(context) {
-	// Register a display unit
-	local data = http.jsondecode(context.req.rawbody);
-	if ("id" in data) {
-		if (data.id != "") {
-			local gotFlag = false;
-			foreach (index, item in savedData.displays) {
-				if (item == data.id) {
-					// This is an existing display, so remove it from the list
-					savedData.displays.remove(index);
-				}
-			}
+    // Register a display unit
+    local data = http.jsondecode(context.req.rawbody);
+    if ("id" in data) {
+        if (data.id != "") {
+            local gotFlag = false;
+            foreach (index, item in savedData.displays) {
+                if (item == data.id) {
+                    // This is an existing display, so remove it from the list
+                    savedData.displays.remove(index);
+                }
+            }
 
-			context.send(200, { "id" : data.id });
-			local result = server.save(savedData);
-			if (result != 0) server.error("Could not back up data");
-			return;
-		}
-	}
+            context.send(200, { "id" : data.id });
+            local result = server.save(savedData);
+            if (result != 0) server.error("Could not back up data");
+            return;
+        }
+    }
 });
 
 api.get("/display", function(context) {
-	// Return a list of registered displays
-	context.send(200, format(HTML_STRING, http.agenturl(), freeboardLink, http.agenturl()));
+    // Return a list of registered displays
+    context.send(200, format(HTML_STRING, http.agenturl(), freeboardLink, http.agenturl()));
 });
 
 // POST at /debug updates the passed setting(s)
@@ -302,11 +307,11 @@ savedData.displays <- [];
 
 local backup = server.load();
 if (backup.len() != 0) {
-	savedData = backup;
-	dweetName = dweetName + "-" + savedData.locale;
+    savedData = backup;
+    dweetName = dweetName + "-" + savedData.locale;
 } else {
-	local result = server.save(savedData);
-	if (result != 0) server.error("Could not back up data");
+    local result = server.save(savedData);
+    if (result != 0) server.error("Could not back up data");
 }
 
 // Register the function to handle data messages from the device

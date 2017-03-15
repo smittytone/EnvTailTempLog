@@ -1,4 +1,4 @@
-// Environment Tail Data Log 1.1
+// Environment Tail Data Log
 // Copyright 2016-17, Tony Smith
 
 #require "Si702x.class.nut:1.0.0"
