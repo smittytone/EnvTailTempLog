@@ -1,4 +1,4 @@
-// Environment Tail Data Log 1.1
+// Environment Tail Data Log
 // Copyright 2016-17, Tony Smith
 
 #require "Dweetio.class.nut:1.0.1"
@@ -130,6 +130,8 @@ function postReading(reading) {
     dweeter.dweet(dweetName, reading, function(response) {
         if (response.statuscode != 200) {
             if (debug) server.error("Could not Dweet data at " + time() + " (Code: " + response.statuscode + ")");
+        } else {
+            if (debug) server.log("Dweeted data for " + myDweetName);
         }
     });
 
@@ -198,6 +200,7 @@ api.post("/location", function(context) {
 			savedData.locale = data.location;
 			local parts = split(dweetName, "-");
 			dweetName = parts[0] + "-" + savedData.locale;
+			if (debug) server.log("New Dweetname: " + dweetName);
 			context.send(200, { locale = savedData.locale });
 			local result = server.save(savedData);
 			if (result != 0) server.error("Could not back up data");
