@@ -1,16 +1,16 @@
 # EnvTailTempLog 1.1
 
-A very simple Electric Imp-based environmental temperature/humidity sensor. It is built around the imp001 card, ‘April’ breakout board and the Environment Sensor Tail, all of which are available as a bundle [here](https://www.amazon.com/WiFi-Environmental-Sensor-LED-kit/dp/B00ZQ4D1TM).
+A very simple Electric Imp-based environmental temperature/humidity sensor. It is built around the [imp001 card, ‘April’ breakout board](https://electricimp.com/docs/gettingstarted/devkits/) and the Environment Sensor Tail (though this is no longer available to buy).
 
 ## Hardware
 
-The imp001 slots into the April, the Environment Sensor Tail fits onto the April’s breakout connector pins. Plug it into a USB adaptor and you’re ready to begin.
+The imp001 slots into the April, the Environment Sensor Tail fits onto the April’s breakout connector pins. Plug it into a USB adaptor and you’re ready to begin. The complete hardware looks like this:
 
 ![Hardware](./hardware.jpg)
 
 ## Software
 
-EnvTailTempLog requires a free Electric Imp developer account. To find out more and sign up for an account, please see the [Electric Imp Getting Started Guide](https://electricimp.com/docs/gettingstarted/).
+EnvTailTempLog requires a free Electric Imp developer account. To find out more and sign up for an account, please see the [Electric Imp Getting Started Guide](https://electricimp.com/docs/gettingstarted/). This will tell you everything you need to know to get your environmental temperature/humidity sensor online.
 
 The agent and device code included in this repository will need to be pasted into the Electric Imp IDE.
 

@@ -174,7 +174,6 @@ function postReading(reading) {
 // dweetName = "<YOUR_DWEET_DEVICE_NAME>";
 // freeboardLink = "<YOUR_FREEBOARD_IO_URL>";
 
-// And comment out the following line:
 #import "../../../Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
 
 // Instantiate objects
