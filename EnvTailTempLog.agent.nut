@@ -28,7 +28,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
     </head>
     <body>
         <div class='container' style='padding: 20px'>
-            <div class='container' style='border: 2px solid white'>
+            <div style='border: 2px solid white'>
                 <h2 class='text-center'>Environment Data <span></span></h2>
                 <div class='current-status'>
                     <h4 class='temp-status' align='center'>Current Temperature: <span></span>&deg;C</h4>
