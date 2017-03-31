@@ -53,7 +53,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                 <br>
                 <p align='center'><small>From: %s<br>Chart data at <a href='%s' target='_blank'>freeboard.io</a><br>&nbsp;</small></p>
                 <hr>
-                <p class='text-center' style='font-family:Oswald'><small>Weather Monitor copyright &copy; Tony Smith, 2014-17</small><br>&nbsp;<br><img src='https://smittytone.github.io/rassilon.png' width='32' height='32'></p>
+                <p class='text-center' style='font-family:Oswald'><small>Weather Monitor copyright &copy; Tony Smith, 2014-17</small><br>&nbsp;<br><img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></p>
             </div>
         </div>
 
