@@ -10,8 +10,8 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
     <head>
         <title>Environment Data</title>
         <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'>
-        <link href='//fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
-        <link href='//fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
         <link rel='apple-touch-icon' href='https://smittytone.github.io/images/ati-tsensor.png'>
         <link rel='shortcut icon' href='https://smittytone.github.io/images/ico-tsensor.ico' />
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
@@ -53,7 +53,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                 <br>
                 <p align='center'><small>From: %s<br>Chart data at <a href='%s' target='_blank'>freeboard.io</a><br>&nbsp;</small></p>
                 <hr>
-                <p class='text-center' style='font-family:Oswald'><small>Weather Monitor copyright &copy; Tony Smith, 2014-17</small><br>&nbsp;<br><img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></p>
+                <p class='text-center' style='font-family:Oswald'><small>Weather Monitor copyright &copy; Tony Smith, 2014-17</small><br>&nbsp;<br><ahref='https://github.com/smittytone/EnvTailTempLog'><img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
             </div>
         </div>
 
