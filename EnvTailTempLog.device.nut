@@ -43,6 +43,9 @@ function flashLed() {
     led.write(0);
 }
 
+// Load in generic boot message code
+#include "../generic/bootmessage.nut"
+
 // START OF PROGRAM
 
 // Instance the Si702x and save a reference in tailSensor
