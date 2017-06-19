@@ -51,9 +51,9 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                     </form>
                 </div>
                 <br>
-                <p align='center'><small>From: %s<br>Chart data at <a href='%s' target='_blank'>freeboard.io</a><br>&nbsp;</small></p>
+                <p align='center'><small>Chart data at <a href='%s' target='_blank'>freeboard.io</a><br>&nbsp;</small></p>
                 <hr>
-                <p class='text-center' style='font-family:Oswald'><small>Weather Monitor copyright &copy; Tony Smith, 2014-17</small><br>&nbsp;<br><a href='https://github.com/smittytone/EnvTailTempLog'><img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
+                <p class='text-center' style='font-family:Oswald'><small>Environment Data &copy; Tony Smith, 2014-17</small><br>&nbsp;<br><a href='https://github.com/smittytone/EnvTailTempLog'><img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
             </div>
         </div>
 
@@ -185,8 +185,7 @@ api = Rocky();
 // Set up the app's API
 api.get("/", function(context) {
     // Root request: just return standard HTML string
-    local url = http.agenturl();
-    context.send(200, format(HTML_STRING, url, freeboardLink, url));
+    context.send(200, format(HTML_STRING, freeboardLink, http.agenturl()));
 });
 
 api.get("/state", function(context) {
@@ -267,7 +266,7 @@ api.put("/display", function(context) {
 
 api.get("/display", function(context) {
     // Return a list of registered displays
-    context.send(200, format(HTML_STRING, http.agenturl(), freeboardLink, http.agenturl()));
+    context.send(200, format(HTML_STRING, freeboardLink, http.agenturl()));
 });
 
 // POST at /debug updates the passed setting(s)
