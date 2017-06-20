@@ -4,6 +4,8 @@
 #require "Dweetio.class.nut:1.0.1"
 #require "Rocky.class.nut:2.0.0"
 
+#import "../Location/location.class.nut"
+
 // CONSTANTS
 const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
 <html>
@@ -35,23 +37,23 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                 <div class='current-status'>
                     <h4 class='temp-status' align='center'>Current Temperature: <span></span>&deg;C</h4>
                     <h4 class='humid-status' align='center'>Current Humidity: <span></span> per cent</h4>
+                    <h4 class='name-status' align='center'>Sensor Name: <span></span></h4>
                     <h4 class='locale-status' align='center'>Sensor Location: <span></span></h4>
                     <p class='timestamp' align='center'>&nbsp;<br>Last reading: <span></span></p>
+                    <p align='center'>Contemporary chart data at <a href='%s' target='_blank'>freeboard.io</a></p>
                 </div>
                 <br>
                 <div class='controls' align='center'>
                     <form id='name-form'>
-                        <div class='update-button' >
-                            <p>Update Location Name <input id='location'></input>
-                            <button style='color:dimGrey;font-family:Abel' type='submit' id='location-button'>Set Location</button></p>
+                        <div class='update-button'>
+                            Update Sensor Name <input id='location'></input>
+                            <button style='color:dimGrey;font-family:Abel' type='submit' id='location-button'>Set Name</button>
                         </div>
                         <div class='debug-checkbox' style='color:white;font-family:Abel'>
                             <small><input type='checkbox' name='debug' id='debug' value='debug'> Debug Mode</small>
                         </div>
                     </form>
                 </div>
-                <br>
-                <p align='center'><small>Chart data at <a href='%s' target='_blank'>freeboard.io</a><br>&nbsp;</small></p>
                 <hr>
                 <p class='text-center' style='font-family:Oswald'><small>Environment Data &copy; Tony Smith, 2014-17</small><br>&nbsp;<br><a href='https://github.com/smittytone/EnvTailTempLog'><img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
             </div>
@@ -77,6 +79,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                 $('.text-center span').text(data.vers);
                 $('.temp-status span').text(data.temp);
                 $('.humid-status span').text(data.humid);
+                $('.name-status span').text(data.name);
                 $('.locale-status span').text(data.locale);
 
                 var date = new Date();
@@ -101,14 +104,15 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                 });
             }
 
-            function setLocation(place) {
+            function setName(name) {
+                // Set the sensor name
                 $.ajax({
-                    url : agenturl + '/location',
+                    url : agenturl + '/name',
                     type: 'POST',
-                    data: JSON.stringify({ 'location' : place }),
+                    data: JSON.stringify({ 'name' : name }),
                     success : function(response) {
-                        if ('locale' in response) {
-                            $('.locale-status span').text(response.locale);
+                        if ('name' in response) {
+                            $('.name-status span').text(response.name);
                         }
                     }
                 });
@@ -130,12 +134,13 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
 // GLOBALS
 local dweeter = null;
 local api = null;
+local locator = null;
 local savedData = null;
 local dweetName = "";
 local freeboardLink = "";
 local appName = "EnvTempLog";
-local appVersion = "1.1";
-local newstart = false;
+local appVersion = "1.2";
+local newStart = false;
 local debug = true;
 
 // FUNCTIONS
@@ -154,20 +159,18 @@ function postReading(reading) {
     savedData.humid = format("%.2f", reading.humid);
     local result = server.save(savedData);
     if (result != 0) server.error("Could not back up data");
+}
 
-    // Inform registered displays
-    if (savedData.displays.len() > 0) {
-        local body = { "temp" : savedData.temp };
-        body = http.jsonencode(body);
-        foreach (display in savedData.displays) {
-            local req = http.post(display + "/data", { "content-type" : "application/json" }, body);
-            req.sendasync(function(response) {
-                if (response.statuscode == 200) {
-                    if (debug) server.log("Device " + response.body + " ACKs receipt of data");
-                }
-            });
-        }
-    }
+function reset() {
+    server.save({});
+    savedData = {};
+    savedData.temp <- "TBD";
+    savedData.humid <- "TBD";
+    savedData.locale <- "Unknown";
+    savedData.location <- {};
+    savedData.location.lat <- 0.0;
+    savedData.location.lng <- 0.0;
+    savedData.location.loc <- "Unknown";
 }
 
 // START OF PROGRAM
@@ -175,6 +178,7 @@ function postReading(reading) {
 // To use, un-comment and complete the following line:
 // dweetName = "<YOUR_DWEET_DEVICE_NAME>";
 // freeboardLink = "<YOUR_FREEBOARD_IO_URL>";
+// locator = Location("<YOUR_GOOGLE_GEOLOCATION_API_KEY>");
 
 #import "../../../Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
 
@@ -190,25 +194,26 @@ api.get("/", function(context) {
 
 api.get("/state", function(context) {
     // Request for data from /state endpoint
-    context.send(200, { "temp" : savedData.temp,
+    context.send(200, { "temp"  : savedData.temp,
                         "humid" : savedData.humid,
-                        "locale" : savedData.locale,
+                        "name"  : savedData.locale,
+                        "locale": savedDate.location.place,
                         "debug" : debug,
-                        "vers" : appVersion });
+                        "vers"  : appVersion });
 });
 
-api.post("/location", function(context) {
-    // Sensor location string submission at the /location endpoint
+api.post("/name", function(context) {
+    // Sensor name string submission at the /name endpoint
     local data = http.jsondecode(context.req.rawbody);
-    if ("location" in data) {
-        if (data.location != "") {
-            savedData.locale = data.location;
+    if ("name" in data) {
+        if (data.name != "") {
+            savedData.locale = data.name;
             local parts = split(dweetName, "-");
             dweetName = parts[0] + "-" + savedData.locale;
             if (debug) server.log("New Dweetname: " + dweetName);
-            context.send(200, { locale = savedData.locale });
+            context.send(200, { "name" : savedData.locale });
             local result = server.save(savedData);
-            if (result != 0) server.error("Could not back up data");
+            if (result != 0) server.error("Could not save application data");
             return;
         }
     }
@@ -216,58 +221,6 @@ api.post("/location", function(context) {
     context.send(200, "OK");
 });
 
-api.post("/display", function(context) {
-    // Register a display unit
-    local data = http.jsondecode(context.req.rawbody);
-    if ("id" in data) {
-        server.log("Registering ID: " + data.id);
-        if (data.id != "") {
-            local gotFlag = false;
-            foreach (item in savedData.displays) {
-                if (item == data.id) {
-                    gotFlag = true;
-                    break;
-                }
-            }
-
-            if (!gotFlag) {
-                // This is a new display, so add it to the list
-                savedData.displays.append(id);
-            }
-
-            context.send(200, { "id" : data.id });
-            local result = server.save(savedData);
-            if (result != 0) server.error("Could not back up data");
-            return;
-        }
-    }
-});
-
-api.put("/display", function(context) {
-    // Register a display unit
-    local data = http.jsondecode(context.req.rawbody);
-    if ("id" in data) {
-        if (data.id != "") {
-            local gotFlag = false;
-            foreach (index, item in savedData.displays) {
-                if (item == data.id) {
-                    // This is an existing display, so remove it from the list
-                    savedData.displays.remove(index);
-                }
-            }
-
-            context.send(200, { "id" : data.id });
-            local result = server.save(savedData);
-            if (result != 0) server.error("Could not back up data");
-            return;
-        }
-    }
-});
-
-api.get("/display", function(context) {
-    // Return a list of registered displays
-    context.send(200, format(HTML_STRING, freeboardLink, http.agenturl()));
-});
 
 // POST at /debug updates the passed setting(s)
 // passed to the endpoint:
@@ -277,12 +230,7 @@ api.post("/debug", function(context) {
         local data = http.jsondecode(context.req.rawbody);
         if ("debug" in data) {
             debug = data.debug;
-            if (debug) {
-                server.log("Debug enabled");
-            } else {
-                server.log("Debug disabled");
-            }
-
+            server.log("Debug " + (debug ? "enabled" : "disabled"));
             device.send("env.tail.set.debug", debug);
         }
     } catch (err) {
@@ -296,23 +244,39 @@ api.post("/debug", function(context) {
 
 
 // Clear save data if required
-if (newstart) server.save({});
+if (newStart) server.save({});
 
-// Set up the backup data
+// Set up the current data
 savedData = {};
 savedData.temp <- "TBD";
 savedData.humid <- "TBD";
 savedData.locale <- "Unknown";
-savedData.displays <- [];
+savedData.location.lat <- 0.0;
+savedData.location.lng <- 0.0;
+savedData.location.loc <- "Unknown";
 
 local backup = server.load();
+
 if (backup.len() != 0) {
     savedData = backup;
     dweetName = dweetName + "-" + savedData.locale;
 } else {
     local result = server.save(savedData);
-    if (result != 0) server.error("Could not back up data");
+    if (result != 0) server.error("Could not save application data");
 }
 
 // Register the function to handle data messages from the device
 device.on("env.tail.reading", postReading);
+
+// Handle device readiness notification by determining device location
+device.on("env.tail.device.ready", function(dummy) {
+    locator.locate(function() {
+        local lcn = locator.getLocation();
+        savedData.location.lat = lcn.lat;
+        savedData.location.lng = lcn.long;
+        savedData.location.loc = lcn.place;
+        
+        local result = server.save(savedData);
+        if (result != 0) server.error("Could not save application data");
+    }.bindenv(this););
+}.bindenv(this););
