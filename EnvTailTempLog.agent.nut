@@ -12,7 +12,6 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
     <head>
         <title>Environment Data</title>
         <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'>
-        <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
         <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
         <link rel='apple-touch-icon' href='https://smittytone.github.io/images/ati-tsensor.png'>
         <link rel='shortcut icon' href='https://smittytone.github.io/images/ico-tsensor.ico' />
@@ -20,34 +19,35 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
         <style>
             .center { margin-left: auto; margin-right: auto; margin-bottom: auto; margin-top: auto; }
             body {background-color: #3366cc}
-            p {color: white; font-family: Abel}
-            h2 {color: #99ccff; font-family: Abel; font-weight:bold}
-            h4 {color: white; font-family: Abel}
-            td {color: white; font-family: Abel}
-            a:link {color: white; font-family: Abel}
-            a:visited {color: #cccccc; font-family: Abel}
-            a:hover {color: black; font-family: Abel}
-            a:active {color: black; font-family: Abel}
+            p {color: white; font-family: Abel, sans-serif; font-size: 16px}
+            p.colophon {font-family:Abel, sans-serif; font-size: 13px}
+            p.input {color: black}
+            h2 {color: #99ccff; font-family: Abel, sans-serif; font-weight:bold}
+            h4 {color: white; font-family: Abel, sans-serif}
+            td {color: white; font-family: Abel, sans-serif}
+            a:link {color: white; font-family: Abel, sans-serif; text-decoration: underline}
+            a:visited {color: #cccccc; font-family: Abel, sans-serif; text-decoration: underline;}
+            a:hover {color: black; font-family: Abel, sans-serif}
+            a:active {color: black; font-family: Abel, sans-serif}
         </style>
     </head>
     <body>
         <div class='container' style='padding: 20px'>
             <div style='border: 2px solid white'>
-                <h2 class='text-center'>Environment Data <span></span></h2>
-                <div class='current-status'>
+                <h2 class='name-status' align='center'>Environment Data <span></span></h2>
+                <div class='current-status-area'>
                     <h4 class='temp-status' align='center'>Current Temperature: <span></span>&deg;C</h4>
                     <h4 class='humid-status' align='center'>Current Humidity: <span></span> per cent</h4>
-                    <h4 class='name-status' align='center'>Sensor Name: <span></span></h4>
                     <h4 class='locale-status' align='center'>Sensor Location: <span></span></h4>
                     <p class='timestamp' align='center'>&nbsp;<br>Last reading: <span></span></p>
                     <p align='center'>Contemporary chart data at <a href='%s' target='_blank'>freeboard.io</a></p>
                 </div>
                 <br>
-                <div class='controls' align='center'>
+                <div class='controls-area' align='center'>
                     <form id='name-form'>
                         <div class='update-button'>
-                            Update Sensor Name <input id='location'></input>
-                            <button style='color:dimGrey;font-family:Abel' type='submit' id='location-button'>Set Name</button>
+                            <p>Update Sensor Name <input id='location' style='color:black'></input>
+                            <button style='color:dimGrey;font-family:Abel,sans-serif' type='submit' id='location-button'>Set Name</button></p>
                         </div>
                         <div class='debug-checkbox' style='color:white;font-family:Abel'>
                             <small><input type='checkbox' name='debug' id='debug' value='debug'> Debug Mode</small>
@@ -55,7 +55,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                     </form>
                 </div>
                 <hr>
-                <p class='text-center' style='font-family:Oswald'><small>Environment Data &copy; Tony Smith, 2014-17</small><br>&nbsp;<br><a href='https://github.com/smittytone/EnvTailTempLog'><img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
+                <p class='colophon' align='center'>Environment Data &copy; Tony Smith, 2014-17<br>&nbsp;<br><a href='https://github.com/smittytone/EnvTailTempLog'><img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
             </div>
         </div>
 
@@ -71,16 +71,20 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
             function getStateInput(e){
                 e.preventDefault();
                 var place = document.getElementById('location').value;
-                setLocation(place);
+                setName(place);
                 $('#name-form').trigger('reset');
             }
 
             function updateReadout(data) {
-                $('.text-center span').text(data.vers);
                 $('.temp-status span').text(data.temp);
                 $('.humid-status span').text(data.humid);
-                $('.name-status span').text(data.name);
                 $('.locale-status span').text(data.locale);
+
+                if (data.name === '') {
+                    $('.name-status span').text('');
+                } else {
+                    $('.name-status span').text('(' + data.name + ')');
+                }
 
                 var date = new Date();
                 $('.timestamp span').text(date.toTimeString());
@@ -135,12 +139,11 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
 local dweeter = null;
 local api = null;
 local locator = null;
-local savedData = null;
+local settings = null;
 local dweetName = "";
 local freeboardLink = "";
-local appName = "EnvTempLog";
-local appVersion = "1.2";
 local newStart = false;
+local deviceReady = false;
 local debug = true;
 
 // FUNCTIONS
@@ -155,22 +158,57 @@ function postReading(reading) {
     });
 
     // Save it for presentation too
-    savedData.temp = format("%.2f", reading.temp);
-    savedData.humid = format("%.2f", reading.humid);
-    local result = server.save(savedData);
+    settings.temp = format("%.2f", reading.temp);
+    settings.humid = format("%.2f", reading.humid);
+    local result = server.save(settings);
     if (result != 0) server.error("Could not back up data");
 }
 
+function parsePlaceData(data) {
+    // Run through the raw place data returned by Google and find what area we're in
+    foreach (item in data) {
+        foreach (k, v in item) {
+            // We're looking for the 'types' array
+            if (k == "types") {
+                // Got it, so look through the elements for 'neighborhood'
+                foreach (entry in v) {
+                    if (entry == "neighborhood") return item.formatted_address;
+                }
+            }
+        }
+    }
+
+    // Iterate through the results table to find the admin area instead
+    // This is because there is no 'neighborhood' entry
+    foreach (item in data) {
+        foreach (k, v in item) {
+            // We're looking for the 'types' array
+            if (k == "types") {
+                // Got it, so look through the elements for 'dministrative_area_level_3'
+                foreach (entry in v) {
+                    if (entry == "administrative_area_level_3") return item.formatted_address;
+                }
+            }
+        }
+    }
+
+    return "Unknown";
+}
+
 function reset() {
+    // Wipe the data stored on the server
     server.save({});
-    savedData = {};
-    savedData.temp <- "TBD";
-    savedData.humid <- "TBD";
-    savedData.locale <- "Unknown";
-    savedData.location <- {};
-    savedData.location.lat <- 0.0;
-    savedData.location.lng <- 0.0;
-    savedData.location.loc <- "Unknown";
+
+    // Reset the settings to default values
+    settings = {};
+    settings.temp <- "TBD";
+    settings.humid <- "TBD";
+    settings.locale <- "";
+    settings.location <- {};
+    settings.location.lat <- 0.0;
+    settings.location.lng <- 0.0;
+    settings.location.loc <- "Unknown";
+    settings.debug <- debug;
 }
 
 // START OF PROGRAM
@@ -186,6 +224,31 @@ function reset() {
 dweeter = DweetIO();
 api = Rocky();
 
+// Clear saved data on from the server if required
+if (newStart) server.save({});
+
+// Set up the current settings and preserved data
+settings = {};
+settings.temp <- "TBD";
+settings.humid <- "TBD";
+settings.locale <- "";
+settings.location <- {};
+settings.location.lat <- 0.0;
+settings.location.lng <- 0.0;
+settings.location.loc <- "Unknown";
+settings.debug <- debug;
+
+local backup = server.load();
+
+if (backup.len() != 0) {
+    settings = backup;
+    if ("debug" in settings) debug = settings.debug;
+    dweetName = dweetName + "-" + settings.locale;
+} else {
+    local result = server.save(settings);
+    if (result != 0) server.error("Could not save application data");
+}
+
 // Set up the app's API
 api.get("/", function(context) {
     // Root request: just return standard HTML string
@@ -194,12 +257,11 @@ api.get("/", function(context) {
 
 api.get("/state", function(context) {
     // Request for data from /state endpoint
-    context.send(200, { "temp"  : savedData.temp,
-                        "humid" : savedData.humid,
-                        "name"  : savedData.locale,
-                        "locale": savedDate.location.place,
-                        "debug" : debug,
-                        "vers"  : appVersion });
+    context.send(200, { "temp"  : settings.temp,
+                        "humid" : settings.humid,
+                        "name"  : settings.locale,
+                        "locale": settings.location.loc,
+                        "debug" : debug });
 });
 
 api.post("/name", function(context) {
@@ -207,12 +269,12 @@ api.post("/name", function(context) {
     local data = http.jsondecode(context.req.rawbody);
     if ("name" in data) {
         if (data.name != "") {
-            savedData.locale = data.name;
+            settings.locale = data.name;
             local parts = split(dweetName, "-");
-            dweetName = parts[0] + "-" + savedData.locale;
+            dweetName = parts[0] + "-" + settings.locale;
             if (debug) server.log("New Dweetname: " + dweetName);
-            context.send(200, { "name" : savedData.locale });
-            local result = server.save(savedData);
+            context.send(200, { "name" : settings.locale });
+            local result = server.save(settings);
             if (result != 0) server.error("Could not save application data");
             return;
         }
@@ -232,6 +294,15 @@ api.post("/debug", function(context) {
             debug = data.debug;
             server.log("Debug " + (debug ? "enabled" : "disabled"));
             device.send("env.tail.set.debug", debug);
+
+            if ("debug" in settings) {
+                settings.debug = debug;
+            } else {
+                settings.debug <- debug;
+            }
+
+            local result = server.save(settings);
+            if (result != 0) server.error("Could not save application data");
         }
     } catch (err) {
         server.error(err);
@@ -242,41 +313,41 @@ api.post("/debug", function(context) {
     context.send(200, (debug ? "Debug on" : "Debug off"));
 });
 
+// GET to /clear zaps the settings
+api.get("/clear", function(context) {
+    context.send(200, "OK");
+    reset();
 
-// Clear save data if required
-if (newStart) server.save({});
+    // Put back the location data
+    local lcn = locator.getLocation();
+    settings.location.lat = lcn.latitude;
+    settings.location.lng = lcn.longitude;
+    settings.location.loc = parsePlaceData(lcn.placeData);
 
-// Set up the current data
-savedData = {};
-savedData.temp <- "TBD";
-savedData.humid <- "TBD";
-savedData.locale <- "Unknown";
-savedData.location.lat <- 0.0;
-savedData.location.lng <- 0.0;
-savedData.location.loc <- "Unknown";
-
-local backup = server.load();
-
-if (backup.len() != 0) {
-    savedData = backup;
-    dweetName = dweetName + "-" + savedData.locale;
-} else {
-    local result = server.save(savedData);
+    // Save the reset settings data on the server
+    local result = server.save(settings);
     if (result != 0) server.error("Could not save application data");
-}
+});
 
 // Register the function to handle data messages from the device
 device.on("env.tail.reading", postReading);
 
 // Handle device readiness notification by determining device location
+// NOTE only do this once per agent runtime as device restarts many times
 device.on("env.tail.device.ready", function(dummy) {
-    locator.locate(function() {
-        local lcn = locator.getLocation();
-        savedData.location.lat = lcn.lat;
-        savedData.location.lng = lcn.long;
-        savedData.location.loc = lcn.place;
-        
-        local result = server.save(savedData);
-        if (result != 0) server.error("Could not save application data");
-    }.bindenv(this););
-}.bindenv(this););
+    if (!deviceReady) {
+        locator.locate(true, function() {
+            deviceReady = true;
+
+            // Get the location of the device
+            local lcn = locator.getLocation();
+            settings.location.lat = lcn.latitude;
+            settings.location.lng = lcn.longitude;
+            settings.location.loc = parsePlaceData(lcn.placeData);
+
+            // Save the settings data on the server
+            local result = server.save(settings);
+            if (result != 0) server.error("Could not save application data");
+        }.bindenv(this));
+    }
+}.bindenv(this));
