@@ -3,12 +3,15 @@
 
 #require "Si702x.class.nut:1.0.0"
 
+#import "../Location/location.class.nut"
+
 // CONSTANTS
 const SLEEP_TIME = 120;
 
 // GLOBALS
 local tail = null;
 local led = null;
+local locator = null;
 local debug = true;
 
 // FUNCTIONS
@@ -48,6 +51,9 @@ function flashLed() {
 
 // START OF PROGRAM
 
+// Instance Location
+locator = Location();
+
 // Instance the Si702x and save a reference in tailSensor
 hardware.i2c89.configure(CLOCK_SPEED_400_KHZ);
 tail = Si702x(hardware.i2c89, 0x80);
@@ -61,11 +67,15 @@ agent.on("env.tail.set.debug", function(value) {
     debug = value;
 });
 
+// Signal readiness
+agent.send("env.tail.device.ready", true);
+
 // Set the imp to wake in 'SLEEP_TIME' seconds and
 // set the idle function to sleep the device
 imp.wakeup(SLEEP_TIME, function() {
     tail.read(processData);
     imp.onidle(function() {
+        if (debug) server.log("Device sleeping for " + SLEEP_TIME + " seconds");
         server.sleepfor(SLEEP_TIME);
     });
 });
@@ -74,3 +84,5 @@ imp.wakeup(SLEEP_TIME, function() {
 // Note: when the device wakes from sleep (caused by line 38)
 // it runs its device code afresh - ie. it does a warm boot
 tail.read(processData);
+
+
