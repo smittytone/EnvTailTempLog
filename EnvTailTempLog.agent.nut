@@ -12,28 +12,28 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
     <head>
         <title>Environment Data</title>
         <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'>
-        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet'>
         <link rel='apple-touch-icon' href='https://smittytone.github.io/images/ati-tsensor.png'>
         <link rel='shortcut icon' href='https://smittytone.github.io/images/ico-tsensor.ico' />
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <style>
             .center { margin-left: auto; margin-right: auto; margin-bottom: auto; margin-top: auto; }
             body {background-color: #3366cc}
-            p {color: white; font-family: Abel, sans-serif; font-size: 16px}
-            p.colophon {font-family:Abel, sans-serif; font-size: 13px}
+            p {color: white; font-family: Open Sans Condensed, sans-serif; font-size: 16px}
+            p.colophon {font-family: Open Sans Condensed, sans-serif; font-size: 13px}
             p.input {color: black}
-            h2 {color: #99ccff; font-family: Abel, sans-serif; font-weight:bold}
-            h4 {color: white; font-family: Abel, sans-serif}
-            td {color: white; font-family: Abel, sans-serif}
-            a:link {color: white; font-family: Abel, sans-serif; text-decoration: underline}
-            a:visited {color: #cccccc; font-family: Abel, sans-serif; text-decoration: underline;}
-            a:hover {color: black; font-family: Abel, sans-serif}
-            a:active {color: black; font-family: Abel, sans-serif}
+            h2 {color: #99ccff; font-family: Open Sans Condensed, sans-serif; font-weight:bold}
+            h4 {color: white; font-family: Open Sans Condensed, sans-serif}
+            td {color: white; font-family: Open Sans Condensed, sans-serif}
+            a:link {color: white; font-family: Open Sans Condensed, sans-serif; text-decoration: underline}
+            a:visited {color: #cccccc; font-family: Open Sans Condensed, sans-serif; text-decoration: underline;}
+            a:hover {color: black; font-family: Open Sans Condensed, sans-serif}
+            a:active {color: black; font-family: Open Sans Condensed, sans-serif}
         </style>
     </head>
     <body>
         <div class='container' style='padding: 20px'>
-            <div style='border: 2px solid white'>
+            <div style='border: 1px solid white'>
                 <h2 class='name-status' align='center'>Environment Data <span></span></h2>
                 <div class='current-status-area'>
                     <h4 class='temp-status' align='center'>Current Temperature: <span></span>&deg;C</h4>
@@ -47,9 +47,9 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                     <form id='name-form'>
                         <div class='update-button'>
                             <p>Update Sensor Name <input id='location' style='color:black'></input>
-                            <button style='color:dimGrey;font-family:Abel,sans-serif' type='submit' id='location-button'>Set Name</button></p>
+                            <button style='color:dimGrey;font-family:Open Sans Condensed,sans-serif' type='submit' id='location-button'>Set Name</button></p>
                         </div>
-                        <div class='debug-checkbox' style='color:white;font-family:Abel'>
+                        <div class='debug-checkbox' style='color:white;font-family:Open Sans Condensed'>
                             <small><input type='checkbox' name='debug' id='debug' value='debug'> Debug Mode</small>
                         </div>
                     </form>
