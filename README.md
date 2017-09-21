@@ -1,4 +1,4 @@
-# EnvTailTempLog 1.1
+# EnvTailTempLog 1.2
 
 A very simple Electric Imp-based environmental temperature/humidity sensor. It is built around the [imp001 card, ‘April’ breakout board](https://electricimp.com/docs/gettingstarted/devkits/) and the Environment Sensor Tail (though this is no longer available to buy).
 
