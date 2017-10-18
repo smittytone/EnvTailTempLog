@@ -218,7 +218,7 @@ function reset() {
 // freeboardLink = "<YOUR_FREEBOARD_IO_URL>";
 // locator = Location("<YOUR_GOOGLE_GEOLOCATION_API_KEY>");
 
-#import "../../../Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
+#import "~/Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
 
 // Instantiate objects
 dweeter = DweetIO();

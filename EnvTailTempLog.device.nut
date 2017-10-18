@@ -84,5 +84,3 @@ imp.wakeup(SLEEP_TIME, function() {
 // Note: when the device wakes from sleep (caused by line 38)
 // it runs its device code afresh - ie. it does a warm boot
 tail.read(processData);
-
-
