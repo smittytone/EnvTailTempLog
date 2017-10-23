@@ -1,20 +1,25 @@
 // Environment Tail Data Log
 // Copyright 2016-17, Tony Smith
 
+// IMPORTS
+
 #require "Si702x.class.nut:1.0.0"
 
 #import "../Location/location.class.nut"
 
 // CONSTANTS
+
 const SLEEP_TIME = 120;
 
 // GLOBALS
+
 local tail = null;
 local led = null;
 local locator = null;
 local debug = true;
 
 // FUNCTIONS
+
 function processData(data) {
     if ("err" in data) {
         server.error(err);
@@ -37,6 +42,13 @@ function processData(data) {
             server.log("Temperature: " + format("%.2f", data.temperature) + "˚C");
             server.log("Humidity: " + format("%.2f", data.humidity) + "%");
         }
+
+        // Set the imp to sleep for 30s once the reading has been taken
+        // and the imp has gone idle
+        imp.onidle(function() {
+            if (debug) server.log("Device sleeping for " + SLEEP_TIME + " seconds");
+            server.sleepfor(SLEEP_TIME);
+        });
     }
 }
 
@@ -46,10 +58,10 @@ function flashLed() {
     led.write(0);
 }
 
+// START OF PROGRAM
+
 // Load in generic boot message code
 #include "../generic/bootmessage.nut"
-
-// START OF PROGRAM
 
 // Instance Location
 locator = Location();
@@ -69,16 +81,6 @@ agent.on("env.tail.set.debug", function(value) {
 
 // Signal readiness
 agent.send("env.tail.device.ready", true);
-
-// Set the imp to wake in 'SLEEP_TIME' seconds and
-// set the idle function to sleep the device
-imp.wakeup(SLEEP_TIME, function() {
-    tail.read(processData);
-    imp.onidle(function() {
-        if (debug) server.log("Device sleeping for " + SLEEP_TIME + " seconds");
-        server.sleepfor(SLEEP_TIME);
-    });
-});
 
 // Take a temperature reading as soon as the device starts up
 // Note: when the device wakes from sleep (caused by line 38)
