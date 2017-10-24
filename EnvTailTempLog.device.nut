@@ -33,10 +33,18 @@ function processData(data) {
         sendData.humid <- data.humidity;
 
         // Send the packaged data to the agent
-        agent.send("env.tail.reading", sendData);
+        local result = agent.send("env.tail.reading", sendData);
 
-        // Flash the LED to show we've taken a reading
-        flashLed();
+        if (result != 0) {
+            // Flash the LED once to show we couldn't send the data
+            result++;
+            for (local i = 0 ; i < result ; i++) {
+                flashLed();
+            }
+        } else {
+            // Flash the LED once to show we've taken a reading -
+            flashLed();
+        }
 
         if (debug) {
             server.log("Temperature: " + format("%.2f", data.temperature) + "˚C");
