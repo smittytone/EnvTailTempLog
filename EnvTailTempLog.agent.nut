@@ -18,6 +18,9 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <style>
             .center { margin-left: auto; margin-right: auto; margin-bottom: auto; margin-top: auto; }
+            .uicontent {border: 2px solid white}
+            .container {padding: 20px}
+
             body {background-color: #3366cc}
             p {color: white; font-family: Open Sans Condensed, sans-serif; font-size: 16px}
             p.colophon {font-family: Open Sans Condensed, sans-serif; font-size: 13px}
@@ -29,11 +32,16 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
             a:visited {color: #cccccc; font-family: Open Sans Condensed, sans-serif; text-decoration: underline;}
             a:hover {color: black; font-family: Open Sans Condensed, sans-serif}
             a:active {color: black; font-family: Open Sans Condensed, sans-serif}
+
+            @media only screen and (max-width: 640px) {
+                .container {padding: 5px}
+                .uicontent {border: 0px}
+            }
         </style>
     </head>
     <body>
-        <div class='container' style='padding: 20px'>
-            <div style='border: 1px solid white'>
+        <div class='container'>
+            <div class='uicontent' align='center'>
                 <h2 class='name-status' align='center'>Environment Data <span></span></h2>
                 <div class='current-status-area'>
                     <h4 class='temp-status' align='center'>Current Temperature: <span></span>&deg;C</h4>
