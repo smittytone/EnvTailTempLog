@@ -1,9 +1,8 @@
 // Environment Tail Data Log
-// Copyright 2016-17, Tony Smith
+// Copyright 2016-18, Tony Smith
 
 #require "Dweetio.class.nut:1.0.1"
-#require "Rocky.class.nut:2.0.0"
-
+#require "Rocky.class.nut:2.0.1"
 #import "../Location/location.class.nut"
 
 // CONSTANTS

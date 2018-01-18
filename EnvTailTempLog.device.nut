@@ -1,25 +1,20 @@
 // Environment Tail Data Log
-// Copyright 2016-17, Tony Smith
+// Copyright 2016-18, Tony Smith
 
 // IMPORTS
-
 #require "Si702x.class.nut:1.0.0"
-
 #import "../Location/location.class.nut"
 
 // CONSTANTS
-
 const SLEEP_TIME = 120;
 
 // GLOBALS
-
 local tail = null;
 local led = null;
 local locator = null;
 local debug = true;
 
 // FUNCTIONS
-
 function processData(data) {
     if ("err" in data) {
         server.error(err);
@@ -67,7 +62,6 @@ function flashLed() {
 }
 
 // START OF PROGRAM
-
 // Load in generic boot message code
 #include "../generic/bootmessage.nut"
 
