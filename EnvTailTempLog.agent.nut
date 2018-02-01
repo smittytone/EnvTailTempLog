@@ -1,6 +1,7 @@
 // Environment Tail Data Log
 // Copyright 2016-18, Tony Smith
 
+// IMPORTS
 #require "Dweetio.class.nut:1.0.1"
 #require "Rocky.class.nut:2.0.1"
 #import "../Location/location.class.nut"
@@ -334,6 +335,14 @@ api.get("/clear", function(context) {
     // Save the reset settings data on the server
     local result = server.save(settings);
     if (result != 0) server.error("Could not save application data");
+});
+
+// GET at /info returns device capabilities (EXPERIMENTAL)
+api.get("/info", function(context) {
+    local info = {};
+    info.app <- "9416365F-B8EA-4139-98F2-7A1408848CBB";
+    info.watchsupported <- "false";
+    context.send(200, http.jsonencode(info));
 });
 
 // Register the function to handle data messages from the device
