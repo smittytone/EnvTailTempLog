@@ -33,9 +33,7 @@ function processData(data) {
         if (result != 0) {
             // Flash the LED once to show we couldn't send the data
             result++;
-            for (local i = 0 ; i < result ; i++) {
-                flashLed();
-            }
+            for (local i = 0 ; i < result ; i++) flashLed();
         } else {
             // Flash the LED once to show we've taken a reading -
             flashLed();
