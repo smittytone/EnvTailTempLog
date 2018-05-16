@@ -31,11 +31,9 @@ function processData(data) {
         local result = agent.send("env.tail.reading", sendData);
 
         if (result != 0) {
-            // Flash the LED once to show we couldn't send the data
+            // Flash the LED result times to show we couldn't send the data
             result++;
-            for (local i = 0 ; i < result ; i++) {
-                flashLed();
-            }
+            for (local i = 0 ; i < result ; i++) flashLed();
         } else {
             // Flash the LED once to show we've taken a reading -
             flashLed();
@@ -81,7 +79,7 @@ agent.on("env.tail.set.debug", function(value) {
     debug = value;
 });
 
-// Signal readiness
+// Signal readiness to the agent (used for locating)
 agent.send("env.tail.device.ready", true);
 
 // Take a temperature reading as soon as the device starts up

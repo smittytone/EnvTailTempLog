@@ -221,12 +221,11 @@ function reset() {
 
 // START OF PROGRAM
 
+#import "~/Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
 // To use, un-comment and complete the following line:
 // dweetName = "<YOUR_DWEET_DEVICE_NAME>";
 // freeboardLink = "<YOUR_FREEBOARD_IO_URL>";
 // locator = Location("<YOUR_GOOGLE_GEOLOCATION_API_KEY>");
-
-#import "~/Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
 
 // Instantiate objects
 dweeter = DweetIO();
@@ -337,13 +336,19 @@ api.get("/clear", function(context) {
     if (result != 0) server.error("Could not save application data");
 });
 
-// GET at /info returns device capabilities (EXPERIMENTAL)
-api.get("/info", function(context) {
-    local info = {};
-    info.app <- "9416365F-B8EA-4139-98F2-7A1408848CBB";
-    info.watchsupported <- "false";
+// GET at /controller/info returns app data for Controller
+api.get("/controller/info", function(context) {
+    local info = { "appcode": APP_CODE,
+                   "watchsupported": "false" };
     context.send(200, http.jsonencode(info));
 });
+
+// GET at /controller/state returns device status for Controller
+api.get("/controller/state", function(context) {
+    local data = device.isconnected() ? "1" : "0";
+    context.send(200, data);
+});
+
 
 // Register the function to handle data messages from the device
 device.on("env.tail.reading", postReading);
