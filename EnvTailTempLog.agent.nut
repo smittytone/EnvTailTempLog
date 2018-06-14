@@ -134,9 +134,6 @@ api.post("/name", function(context) {
     if ("name" in data) {
         if (data.name != "") {
             settings.locale = data.name;
-            local parts = split(dweetName, "-");
-            dweetName = parts[0] + "-" + settings.locale;
-            if (debug) server.log("New Dweetname: " + dweetName);
             context.send(200, { "name" : settings.locale });
             local result = server.save(settings);
             if (result != 0) server.error("Could not save application data");
