@@ -211,6 +211,10 @@ device.on("env.tail.reading", postReading);
 // Handle device readiness notification by determining device location
 // NOTE only do this once per agent runtime as device restarts many times
 device.on("env.tail.device.ready", function(dummy) {
+    // First, set debug
+    device.send("env.tail.set.debug", debug);
+
+    // Now perform the rest of the set-up
     if (!deviceReady) {
         locator.locate(true, function() {
             deviceReady = true;

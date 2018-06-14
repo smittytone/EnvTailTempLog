@@ -14,7 +14,7 @@ const SLEEP_TIME = 120;
 local tail = null;
 local led = null;
 local locator = null;
-local debug = true;
+local debug = false;
 
 
 // FUNCTIONS
@@ -50,7 +50,6 @@ function processData(data) {
         // Set the imp to sleep for 30s once the reading has been taken
         // and the imp has gone idle
         imp.onidle(function() {
-            if (debug) server.log("Device sleeping for " + SLEEP_TIME + " seconds");
             server.sleepfor(SLEEP_TIME);
         });
     }
@@ -81,12 +80,16 @@ led.configure(DIGITAL_OUT, 0);
 // Allow agent to set the 'debug' flag
 agent.on("env.tail.set.debug", function(value) {
     debug = value;
+
+    // Take a temperature reading
+    tail.read(processData);
 });
 
-// Signal readiness to the agent (used for locating)
-agent.send("env.tail.device.ready", true);
-
-// Take a temperature reading as soon as the device starts up
-// Note: when the device wakes from sleep (caused by line 38)
-// it runs its device code afresh - ie. it does a warm boot
-tail.read(processData);
+if (!server.isconnected()) {
+    // Take a temperature reading as soon as the device starts up
+    // provided we're not connected —
+    tail.read(processData);
+} else {
+    // Signal readiness to the agent (used for locating)
+    agent.send("env.tail.device.ready", true);
+}
