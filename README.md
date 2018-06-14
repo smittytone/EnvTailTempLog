@@ -20,7 +20,9 @@ This code makes use of the [Location](https://github.com/smittytone/Location) cl
 
 ## Control UI ##
 
-Visit your sensor’s agent URL for a simple control interface.
+Visit your sensor’s agent URL for a simple control interface:
+
+<p><img src="images/ui.png" width="746" alt="The Web UI"/></p>
 
 ## Licence ##
 
