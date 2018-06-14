@@ -14,12 +14,6 @@ EnvTailTempLog requires a free Electric Imp developer account. To find out more 
 
 The agent and device code included in this repository will need to be pasted into Electric Imp impCentral.
 
-## Dweet and Freeboard ##
-
-The sensor sends its data as a Dweet, so you will need to choose your own unique Dweet name (see [Dweet.io](https://dweet.io/play/)). Add your name to the appropriate place in the agent code.
-
-You will also need to set up a free [Freeboard account](https://freeboard.io/signup). Add your Freeboard URL to the appropriate place in the agent code.
-
 ## Location ##
 
 This code makes use of the [Location](https://github.com/smittytone/Location) class. If you are not using a tool like [Squinter](https://smittytone.github.io/squinter/version2/index.html) to combine multiple source files before uploading the application to the Electric Imp impCloud, you will need to paste the [Location](https://github.com/smittytone/Location) class code into the EnvTailTempLog source (both device and agent code) in place of the relevant `#import` line.

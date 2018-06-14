@@ -11,13 +11,16 @@
   <style>
     .center {margin-left: auto; margin-right: auto; margin-bottom: auto; margin-top: auto;}
     .uicontent {border: 2px solid white;}
+    .boxcontent {border: 2px solid white;}
     .container {padding: 20px;}
-
+    .showhide {cursor: pointer; margin-bottom: 0px; vertical-align: middle; line-height:36px; color: black;}
+    .advanced {background-color: #3366cc; border: 2px solid white;}
     body {background-color: #3366cc;}
     p {color: white; font-family: Open Sans Condensed, sans-serif; font-size: 16px; margin-top:0px;
-       font-size: 0.9em;}
+       font-size: 1.1em;}
     p.colophon {font-family: Open Sans Condensed, sans-serif; font-size: 0.8em;}
     p.input {color: black;}
+    p.boxhead {font-size: 1.2em;margin-top:10px;}
     h2 {color: #99ccff; font-family: Open Sans Condensed, sans-serif; font-weight:bold; margin-top:18px;}
     h4 {color: white; font-family: Open Sans Condensed, sans-serif;}
     td {color: white; font-family: Open Sans Condensed, sans-serif;}
@@ -25,52 +28,87 @@
     a:visited {color: #cccccc; font-family: Open Sans Condensed, sans-serif; text-decoration: underline;}
     a:hover {color: black; font-family: Open Sans Condensed, sans-serif;}
     a:active {color: black; font-family: Open Sans Condensed, sans-serif;}
+    hr {margin-top:0px; background-color:#888888;}
 
     @media only screen and (max-width: 640px) {
       .container {padding: 5px}
       .uicontent {border: 0px}
+      .col-3 {max-width: 0%%; flex: 0 0 0%%;}
+      .col-6 {max-width: 100%%; flex: 0 0 100%%;}
     }
   </style>
 </head>
 <body>
   <div class='container'>
-    <div class='row uicontent' align='center'>
+    <div class='row uicontent'>
       <div class='col'>
-        <h2 class='name-status'>Environment Data <span></span></h2>
-        <h4 class='temp-status'>Current Temperature: <span></span>&deg;C</h4>
-        <h4 class='humid-status'>Current Humidity: <span></span> per cent</h4>
-        <h4 class='locale-status'>Sensor Location: <span></span></h4>
-        <p class='timestamp'>&nbsp;<br>Last reading: <span></span></p>
-        <p><small>Contemporary chart data at <a href='%s' target='_blank'>freeboard.io</a></small></p>
-        <br>
-        <div class='controls-area' align='center'>
-          <form id='name-form'>
-            <div class='update-button'>
-              <p>Update Sensor Name <input id='location' style='color:black;height:38px;vertical-align:middle;'></input>
-              <button class='btn btn-light'
-              style='color:dimGrey;font-family:Open Sans Condensed,sans-serif;vertical-align:middle;'
-              type='submit' id='location-button'>Set Name</button></p>
-            </div>
-            <div class='debug-checkbox' style='color:white;font-family:Open Sans Condensed'>
-              <input type='checkbox' name='debug' id='debug' value='debug'> Debug Mode
-            </div>
-          </form>
+        <!-- Readout Row -->
+        <div class='row' align='center'>
+          <div class='col'>
+            <h2 class='name-status'>Environment Data <span></span></h2>
+            <h4 class='temp-status'>Current Temperature: <span></span>&deg;C</h4>
+            <h4 class='humid-status'>Current Humidity: <span></span>%%</h4>
+            <h4 class='locale-status'>Sensor Location: <span></span></h4>
+            <h4 class='timestamp'>Last reading: <span></span></h4>
+            <br />
+          </div>
         </div>
-        <p>&nbsp;</p>
-        <p class='colophon'>Environment Data &copy; Tony Smith, 2014-17<br>
-        <a href='https://github.com/smittytone/EnvTailTempLog'>
-        <img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
+        <!-- Controls Row -->
+        <div class='row' align='center'>
+          <div class='col-3'>&nbsp;</div>
+          <div class='col-6'>
+            <div class='controls-area' align='center'>
+              <form id='name-form'>
+                <div class='update-button boxcontent'>
+                  <p class='boxhead'>Update Your Sensor’s Name</p>
+                  <input id='location' style='color:black;height:38px;width:220px;vertical-align:middle;font-family: Open Sans Condensed;'
+                    placeholder='Device Name or Location'></input>
+                  <button class='btn btn-light'
+                    style='vertical-align:middle;font-family:Open Sans Condensed,sans-serif;'
+                    type='submit' id='location-button'>Update</button>
+                  <br />&nbsp;
+                </div>
+                <br />
+                <div style='background-color:white;'>
+                  <p class='showhide text-center'>Advanced Settings</h4>
+                  <div class='advanced' align='center'>
+                    <hr />
+                    <div class='debug-checkbox' style='color:white;font-family:Open Sans Condensed'>
+                      <input type='checkbox' name='debug' id='debug' value='debug'> Debug Mode
+                    </div>
+                    <br />
+                  </div>
+                </div>
+              </form>
+            </div>
+            <br />
+          </div>
+          <div class='col-3'>&nbsp;</div>
+        </div>
+        <!-- Colophon Row -->
+        <div class='row' align='center'>
+          <div class='col'>
+            <p class='colophon'>Environment Sensor Tail copyright &copy; Tony Smith, 2014-18<br>
+            <a href='https://github.com/smittytone/EnvTailTempLog'>
+            <img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
   <script>
+    $('.advanced').hide();
+
     var agenturl = '%s';
 
     getState(updateReadout);
 
     $('.update-button button').click(getStateInput);
     $('#debug').click(setdebug);
+    $('.showhide').click(function(){
+      $('.advanced').toggle();
+    });
 
     function getStateInput(e){
       e.preventDefault();

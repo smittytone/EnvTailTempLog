@@ -2,37 +2,29 @@
 // Copyright 2016-18, Tony Smith
 
 // IMPORTS
-#require "Dweetio.class.nut:1.0.1"
 #require "Rocky.class.nut:2.0.1"
 #import "../Location/location.class.nut"
 
+
 // CONSTANTS
+// If you are NOT using Squinter or a similar tool, replace the #import statement below
+// with the contents of the named file (envtemplog_ui.html)
 const HTML_STRING = @"
 #import "envtemplog_ui.html"
 ";
 
+
 // GLOBALS
-local dweeter = null;
 local api = null;
 local locator = null;
 local settings = null;
-local dweetName = "";
-local freeboardLink = "";
 local newStart = false;
 local deviceReady = false;
 local debug = true;
 
+
 // FUNCTIONS
 function postReading(reading) {
-    // Dweet the sensor data
-    dweeter.dweet(dweetName, reading, function(response) {
-        if (response.statuscode != 200) {
-            if (debug) server.error("Could not Dweet data at " + time() + " (Code: " + response.statuscode + ")");
-        } else {
-            if (debug) server.log("Dweeted data for " + dweetName);
-        }
-    });
-
     // Save it for presentation too
     settings.temp = format("%.2f", reading.temp);
     settings.humid = format("%.2f", reading.humid);
@@ -87,16 +79,14 @@ function reset() {
     settings.debug <- debug;
 }
 
+
 // START OF PROGRAM
 
 #import "~/Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
 // To use, un-comment and complete the following line:
-// dweetName = "<YOUR_DWEET_DEVICE_NAME>";
-// freeboardLink = "<YOUR_FREEBOARD_IO_URL>";
 // locator = Location("<YOUR_GOOGLE_GEOLOCATION_API_KEY>");
 
 // Instantiate objects
-dweeter = DweetIO();
 api = Rocky();
 
 // Clear saved data on from the server if required
@@ -118,7 +108,6 @@ local backup = server.load();
 if (backup.len() != 0) {
     settings = backup;
     if ("debug" in settings) debug = settings.debug;
-    dweetName = dweetName + "-" + settings.locale;
 } else {
     local result = server.save(settings);
     if (result != 0) server.error("Could not save application data");
@@ -127,7 +116,7 @@ if (backup.len() != 0) {
 // Set up the app's API
 api.get("/", function(context) {
     // Root request: just return standard HTML string
-    context.send(200, format(HTML_STRING, freeboardLink, http.agenturl()));
+    context.send(200, format(HTML_STRING, http.agenturl()));
 });
 
 api.get("/state", function(context) {
@@ -157,7 +146,6 @@ api.post("/name", function(context) {
 
     context.send(200, "OK");
 });
-
 
 // POST at /debug updates the passed setting(s)
 // passed to the endpoint:
@@ -216,7 +204,6 @@ api.get("/controller/state", function(context) {
     local data = device.isconnected() ? "1" : "0";
     context.send(200, data);
 });
-
 
 // Register the function to handle data messages from the device
 device.on("env.tail.reading", postReading);
