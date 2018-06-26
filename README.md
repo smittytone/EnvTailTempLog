@@ -24,6 +24,17 @@ Visit your sensor’s agent URL for a simple control interface:
 
 <p><img src="images/ui.png" width="746" alt="The Web UI"/></p>
 
+## Release Notes ##
+
+- 1.5 *unreleased*
+    - Update to [Bootstrap 4.1.1](https://getbootstrap.com/)
+        - Update Web UI based on Bootstrap
+        - Separate out Web UI into own file for clarity
+    - Add [DisconnectionManager](https://github.com/smittytone/generic/blob/master/disconnect.nut) support
+    - Upgrade [Rocky](https://developer.electricimp.com/libraries/utilities/rocky) to 2.0.1
+    - Update to [JQuery 3.3.1](https://jquery.com)
+    - Prevent Ajax XHR cacheing
+
 ## Licence ##
 
 EnvTailTempLog is licensed under the terms and conditions of the [MIT Licence](./LICENSE).
