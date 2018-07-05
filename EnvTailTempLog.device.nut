@@ -7,7 +7,7 @@
 
 
 // CONSTANTS
-const SLEEP_TIME = 120;
+const SLEEP_TIME = 60;
 
 
 // GLOBALS
@@ -78,16 +78,15 @@ led = hardware.pin2;
 led.configure(DIGITAL_OUT, 0);
 
 // Allow agent to set the 'debug' flag
+// NOTE This is always called in response to the device's 'ready' message
 agent.on("env.tail.set.debug", function(value) {
     debug = value;
-
-    // Take a temperature reading
     tail.read(processData);
 });
 
 if (!server.isconnected()) {
-    // Take a temperature reading as soon as the device starts up
-    // provided we're not connected —
+    // Take a temperature reading as soon as the device starts up,
+    // provided we're not connected
     tail.read(processData);
 } else {
     // Signal readiness to the agent (used for locating)

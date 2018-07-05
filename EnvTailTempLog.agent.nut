@@ -124,6 +124,7 @@ api.get("/state", function(context) {
     context.send(200, { "temp"  : settings.temp,
                         "humid" : settings.humid,
                         "name"  : settings.locale,
+                        "time"  : time(),
                         "locale": settings.location.loc,
                         "debug" : debug });
 });
@@ -208,9 +209,6 @@ device.on("env.tail.reading", postReading);
 // Handle device readiness notification by determining device location
 // NOTE only do this once per agent runtime as device restarts many times
 device.on("env.tail.device.ready", function(dummy) {
-    // First, set debug
-    device.send("env.tail.set.debug", debug);
-
     // Now perform the rest of the set-up
     if (!deviceReady) {
         locator.locate(true, function() {
@@ -225,6 +223,12 @@ device.on("env.tail.device.ready", function(dummy) {
             // Save the settings data on the server
             local result = server.save(settings);
             if (result != 0) server.error("Could not save application data");
+
+            // Send the debug state to the device
+            device.send("env.tail.set.debug", debug);
         }.bindenv(this));
+    } else {
+        // Send the debug state to the device
+        device.send("env.tail.set.debug", debug);
     }
 }.bindenv(this));
