@@ -26,7 +26,9 @@ Visit your sensor’s agent URL for a simple control interface:
 
 ## Release Notes ##
 
-- 1.5 *unreleased*
+- 1.5 *1 August 2018*
+    - Revise charting using Google charts
+    - Remove Dweet and Freeboard support
     - Update to [Bootstrap 4.1.1](https://getbootstrap.com/)
         - Update Web UI based on Bootstrap
         - Separate out Web UI into own file for clarity
