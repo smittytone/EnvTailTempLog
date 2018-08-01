@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang='en-US'>
+<head>
+  <title>Environment Data</title>
+  <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet'>
+  <link rel='apple-touch-icon' href='https://smittytone.github.io/images/ati-tsensor.png'>
+  <link rel='shortcut icon' href='https://smittytone.github.io/images/ico-tsensor.ico' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <meta charset='UTF-8'>
+  <style>
+    .center {margin-left: auto; margin-right: auto; margin-bottom: auto; margin-top: auto;}
+    .uicontent {border: 2px solid white;}
+    .boxcontent {border: 2px solid white;}
+    .container {padding: 20px;}
+    .showhide {cursor: pointer; margin-bottom: 0px; vertical-align: middle; line-height:36px; color: black;}
+    .showhidedash {cursor: pointer; margin-bottom: 0px; vertical-align: middle; line-height:36px; color: black;}
+    .advanced {background-color: #3366cc;border: 2px solid white;}
+    .dboard {background-color: #3366cc;border: 2px solid white; width: 100%%;}
+    body {background-color: #3366cc;}
+    p {color: white; font-family: Open Sans Condensed, sans-serif; font-size: 16px; margin-top:0px;
+       font-size: 1.1em;}
+    p.colophon {font-family: Open Sans Condensed, sans-serif; font-size: 0.8em;}
+    p.input {color: black;}
+    p.boxhead {font-size: 1.2em;margin-top:10px;}
+    h2 {color: #99ccff; font-family: Open Sans Condensed, sans-serif; font-weight:bold; margin-top:18px;}
+    h4 {color: white; font-family: Open Sans Condensed, sans-serif;}
+    td {color: white; font-family: Open Sans Condensed, sans-serif;}
+    a:link {color: white; font-family: Open Sans Condensed, sans-serif; text-decoration: underline;}
+    a:visited {color: #cccccc; font-family: Open Sans Condensed, sans-serif; text-decoration: underline;}
+    a:hover {color: black; font-family: Open Sans Condensed, sans-serif;}
+    a:active {color: black; font-family: Open Sans Condensed, sans-serif;}
+    hr {margin-top:0px; background-color:#888888;}
+
+    @media only screen and (max-width: 640px) {
+      .container {padding: 5px}
+      .uicontent {border: 0px}
+      .col-3 {max-width: 0%%; flex: 0 0 0%%;}
+      .col-6 {max-width: 100%%; flex: 0 0 100%%;}
+    }
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <div class='row uicontent'>
+      <div class='col'>
+        <!-- Readout Row -->
+        <div class='row' align='center'>
+          <div class='col'>
+            <h2 class='name-status'>Environment Data For <span></span></h2>
+            <h4 class='temp-status'>Current Temperature: <span></span>&deg;C</h4>
+            <h4 class='humid-status'>Current Humidity: <span></span>%%</h4>
+            <h4 class='locale-status'>Sensor Location: <span></span></h4>
+            <h4 class='timestamp'>Last reading: <span></span></h4>
+            <br />
+            <div>
+              <h4 class='showhidedash text-center' style='color:white;'><span>Show Readings</span></h4>
+              <div class='dboard'>
+                <div id='dashboard' style='width:100%%;text-align=center;color:white;font-family:Open Sans Condensed,sans-serif;'>
+                  Temperature (&deg;C)<br />
+                  <div id='chartTemp' style='width: 99%%; height: 200px;'></div>
+                  &nbsp;<br />Humidity (%%)<br />
+                  <div id='chartHumid' style='width: 99%%; height: 200px;'></div>
+                  <br />
+                </div>
+                <button class='btn btn-light' type='button' id='startstop'
+                  style='vertical-align:middle;font-family:Open Sans Condensed,sans-serif;width:160px;'>Start Graphing</button>
+                <p>&nbsp;<br /><small>This chart will only be updated (every 60 seconds) while this page is being viewed.</small></p>
+              </div>
+            </div>
+            <br />&nbsp;
+          </div>
+        </div>
+        <!-- Controls Row -->
+        <div class='row' align='center'>
+          <div class='col-3'>&nbsp;</div>
+          <div class='col-6'>
+            <div class='controls-area' align='center'>
+              <form id='name-form'>
+                <div class='update-button boxcontent'>
+                  <p class='boxhead'>Update Your Sensor’s Name</p>
+                  <input id='location' style='color:black;height:38px;width:220px;vertical-align:middle;font-family: Open Sans Condensed;'
+                    placeholder='Device Name or Location'></input>
+                  <button class='btn btn-light'
+                    style='vertical-align:middle;font-family:Open Sans Condensed,sans-serif;'
+                    type='submit' id='location-button'>Update</button>
+                  <br />&nbsp;
+                </div>
+                <br />
+                <div style='background-color:white;'>
+                  <p class='showhide text-center'>Advanced Settings</p>
+                  <div class='advanced' align='center'>
+                    <hr />
+                    <div class='debug-checkbox' style='color:white;font-family:Open Sans Condensed'>
+                      <input type='checkbox' name='debug' id='debug' value='debug'> Debug Mode
+                    </div>
+                    <br />
+                  </div>
+                </div>
+              </form>
+            </div>
+            <br />
+          </div>
+          <div class='col-3'>&nbsp;</div>
+        </div>
+        <!-- Colophon Row -->
+        <div class='row' align='center'>
+          <div class='col'>
+            <p class='colophon'>Environment Sensor Tail copyright &copy; Tony Smith, 2014-18<br>
+            <a href='https://github.com/smittytone/EnvTailTempLog'>
+            <img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32'></a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+  <script>
+    // Hide the Advanced Settings box immediately
+    $('.advanced').hide();
+
+    var agenturl = '%s';
+    var dataTemp = [['0',99]];
+    var dataHumid = [['0',99]];
+    var chartTemp;
+    var chartHumid;
+    var charting = false;
+    var chartHideState = true;
+
+    // Set up chart module
+    google.load('visualization', '1', {packages: ['corechart', 'controls']});
+    google.setOnLoadCallback(function() { chartSetup(); });
+
+    // Set up controls
+    $('.update-button button').click(getStateInput);
+    $('#debug').click(setdebug);
+    $('#startstop').click(startTemp);
+    $('.showhide').click(function(){ $('.advanced').toggle(); });
+    $('.showhidedash').click(function(){
+      $('.dboard').toggle();
+      chartHideState = !chartHideState;
+      drawViz(dataTemp, dataHumid);
+      $('.showhidedash span').text(chartHideState ? 'Show Readings' : 'Hide Readings');
+    });
+
+    //chartSetup();
+    getState(updateReadout);
+
+    function getStateInput(e){
+      e.preventDefault();
+      var place = document.getElementById('location').value;
+      setName(place);
+      $('#name-form').trigger('reset');
+    }
+
+    function updateReadout(data) {
+      $('.temp-status   span').text(data.temp);
+      $('.humid-status  span').text(data.humid);
+      $('.locale-status span').text(data.locale);
+      $('.name-status   span').text(data.name === '' ? ' ' : data.name);
+
+      var date = new Date();
+      var ts = date.toTimeString();
+      $('.timestamp span').text(ts);
+
+      document.getElementById('debug').checked = data.debug;
+
+      var t = [];
+      var h = [];
+      var ar = ts.split(':');
+      ts = ar[0] + ':' + ar[1];
+      t.push(ts);
+      t.push(parseFloat(data.temp));
+      h.push(ts);
+      h.push(parseFloat(data.humid));
+
+      if (charting) {
+        dataTemp.push(t);
+        dataHumid.push(h);
+
+        if (dataTemp.length > 10) {
+          dataTemp.shift();
+          dataHumid.shift();
+        }
+
+        if (!chartHideState) {
+          drawViz(dataTemp, dataHumid);
+        }
+      } else {
+        dataTemp = [t];
+        dataHumid = [h];
+      }
+
+      // Reload page elements in 60s
+      setTimeout(function() {
+        getState(updateReadout);
+      }, 60000);
+    }
+
+    function getState(callback) {
+      $.ajax({
+        url : agenturl + '/state',
+        type: 'GET',
+        success : function(response) {
+          if (callback) {
+            callback(response);
+          }
+        },
+        cache: false
+      });
+    }
+
+    function setName(name) {
+      // Set the sensor name
+      $.ajax({
+        url : agenturl + '/name',
+        type: 'POST',
+        data: JSON.stringify({ 'name' : name }),
+        success : function(response) {
+          if ('name' in response) {
+            $('.name-status span').text(response.name);
+          }
+        },
+        cache: false
+      });
+    }
+
+    function setdebug() {
+      // Tell the device to enter or leave debug mode
+      $.ajax({
+        url : agenturl + '/debug',
+        type: 'POST',
+        data: JSON.stringify({ 'debug' : document.getElementById('debug').checked }),
+        cache: false
+      });
+    }
+
+    function startTemp() {
+      if (charting) {
+        charting = false;
+        $('#startstop').text('Start Graphing');
+      }
+      else
+      {
+        charting = true;
+        chartSetup();
+        $('#startstop').text('Stop Graphing');
+      }
+    }
+
+    function chartSetup() {
+      chartTemp = new google.visualization.ChartWrapper({
+        'chartType': 'LineChart',
+        'containerId': 'chartTemp',
+        'options': {
+          'chartArea': {'height': '80%%', 'width': '90%%'},
+          'hAxis': {'slantedText': false,
+                    'minorGridlines':{'count':'1','color':'#bbbbbb'},
+                    'gridlines':{'color':'#ffffff'},
+                    'baselineColor':'#ffffff',
+                    'textStyle':{'color':'#ffffff'}},
+          'vAxis': {'minorGridlines':{'count':'5','color':'#bbbbbb'},
+                    'gridlines':{'color':'#ffffff'},
+                    'textStyle':{'color':'#ffffff'},
+                    'baselineColor':'#ffffff',
+                    'minValue' : -10,
+                    'maxValue' : 30},
+          'legend': {'position':'none'},
+          'backgroundColor':'#3366cc',
+          'series': {0:{'color':'#ff0000'}}
+        },
+      });
+
+      chartHumid = new google.visualization.ChartWrapper({
+        'chartType': 'LineChart',
+        'containerId': 'chartHumid',
+        'options': {
+          'chartArea': {'height': '80%%', 'width': '90%%'},
+          'hAxis': {'slantedText': false,
+                    'minorGridlines':{'count':'1','color':'#bbbbbb'},
+                    'gridlines':{'color':'#ffffff'},
+                    'baselineColor':'#ffffff',
+                    'textStyle':{'color':'#ffffff'}},
+          'vAxis': {'minorGridlines':{'count':'5','color':'#bbbbbb'},
+                    'gridlines':{'color':'#ffffff'},
+                    'textStyle':{'color':'#ffffff'},
+                    'baselineColor':'#ffffff',
+                    'minValue' : 0,
+                    'maxValue' : 100},
+          'legend': {'position':'none'},
+          'backgroundColor':'#3366cc',
+          'series': {0:{'color':'#00ff00'}}
+        },
+      });
+
+      drawViz(dataTemp, dataHumid);
+
+      if (chartHideState) {
+        $('.dboard').hide();
+      }
+    }
+
+    function drawViz(data_t, data_h) {
+      var flag = true;
+      if (dataTemp.length === 1) {
+        var t = dataTemp[0];
+        if (t[1] === 99) {
+          flag = false;
+        }
+      }
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string','Time');
+      data.addColumn('number','Temp');
+      data.removeRows(0, data.getNumberOfRows());
+      if (flag && data_t.length > 0) { data.addRows(data_t); }
+      chartTemp.setDataTable(data);
+      chartTemp.draw();
+
+      data = new google.visualization.DataTable();
+      data.addColumn('string','Time');
+      data.addColumn('number','Humidity');
+      data.removeRows(0, data.getNumberOfRows());
+      if (flag && data_h.length > 0) { data.addRows(data_h); }
+      chartHumid.setDataTable(data);
+      chartHumid.draw();
+    }
+  </script>
+</body>
+</html>
