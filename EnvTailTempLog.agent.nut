@@ -197,11 +197,7 @@ api.get("/controller/info", function(context) {
     context.send(200, http.jsonencode(info));
 });
 
-// GET at /controller/state returns device status for Controller
-api.get("/controller/state", function(context) {
-    local data = device.isconnected() ? "1" : "0";
-    context.send(200, data);
-});
+// Register device handler functions
 
 // Register the function to handle data messages from the device
 device.on("env.tail.reading", postReading);
