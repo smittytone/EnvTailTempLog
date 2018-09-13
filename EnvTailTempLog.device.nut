@@ -7,7 +7,7 @@
 
 
 // CONSTANTS
-const SLEEP_TIME = 60;
+const SLEEP_TIME = 300;
 
 
 // GLOBALS
