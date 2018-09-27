@@ -26,7 +26,7 @@ Visit your sensor’s agent URL for a simple control interface:
 
 ## Release Notes ##
 
-- 1.6 &mdash; *In development*
+- 1.6.0 &mdash; *In development*
     - Minor code changes
 - 1.5 &mdash; *1 August 2018*
     - Revise charting using Google charts
