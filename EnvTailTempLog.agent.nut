@@ -65,8 +65,12 @@ function parsePlaceData(data) {
 
 function reset() {
     // Wipe the data stored on the server
-    server.save({});
+    if (server.save({}) != 0) server.error("Could not clear data");
+    setDefaults();
+    if (server.save(settings) != 0) server.error("Could not back up data");
+}
 
+function setDefaults() {
     // Reset the settings to default values
     settings = {};
     settings.temp <- "TBD";
@@ -79,7 +83,6 @@ function reset() {
     settings.debug <- debug;
 }
 
-
 // START OF PROGRAM
 
 #import "~/Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
@@ -90,18 +93,10 @@ function reset() {
 api = Rocky();
 
 // Clear saved data on from the server if required
-if (newStart) server.save({});
+if (newStart) reset();
 
 // Set up the current settings and preserved data
-settings = {};
-settings.temp <- "TBD";
-settings.humid <- "TBD";
-settings.locale <- "";
-settings.location <- {};
-settings.location.lat <- 0.0;
-settings.location.lng <- 0.0;
-settings.location.loc <- "Unknown";
-settings.debug <- debug;
+setDefaults();
 
 local backup = server.load();
 
