@@ -197,6 +197,11 @@ api.get("/controller/info", function(context) {
 // Register the function to handle data messages from the device
 device.on("env.tail.reading", postReading);
 
+// Register the function to handle 'get debug' messages
+device.on("env.tail.get.debug", function(ignore) {
+    device.send("env.tail.set.debug", debug);
+});
+
 // Handle device readiness notification by determining device location
 // NOTE only do this once per agent runtime as device restarts many times
 device.on("env.tail.device.ready", function(dummy) {
@@ -216,10 +221,10 @@ device.on("env.tail.device.ready", function(dummy) {
             if (result != 0) server.error("Could not save application data");
 
             // Send the debug state to the device
-            device.send("env.tail.set.debug", debug);
+            device.send("env.tail.start", debug);
         }.bindenv(this));
     } else {
         // Send the debug state to the device
-        device.send("env.tail.set.debug", debug);
+        device.send("env.tail.start", debug);
     }
 }.bindenv(this));

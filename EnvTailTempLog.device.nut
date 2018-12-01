@@ -147,6 +147,7 @@ function processData(data) {
     } else {
         // Got data, so connect and send it
         if (!server.isconnected()) server.connect();
+        agent.send("env.tail.get.debug", true);
         
         // Create a Squirrel table to hold the data - handy if we
         // later want to package up other data from other sensors
@@ -176,7 +177,10 @@ function processData(data) {
         // Set the imp to sleep for 30s once the reading has been taken
         // and the imp has gone idle
         imp.onidle(function() {
-            if (debug) server.log("Next reading in " + SLEEP_TIME + " seconds");
+            if (debug) {
+                server.log("Next reading in " + SLEEP_TIME + " seconds");
+                server.log("EnvTailTempLog disconnecting...");
+            }
             server.flush(30);
             server.disconnect();
             imp.wakeup(SLEEP_TIME, function() {
@@ -210,9 +214,14 @@ led.configure(DIGITAL_OUT, 0);
 
 // Allow agent to set the 'debug' flag
 // NOTE This is always called in response to the device's 'ready' message
-agent.on("env.tail.set.debug", function(value) {
+agent.on("env.tail.start", function(value) {
     debug = value;
     tail.read(processData);
+});
+
+// Allow agent to set the 'debug' flag
+agent.on("env.tail.set.debug", function(value) {
+    debug = value;
 });
 
 if (!server.isconnected()) {
