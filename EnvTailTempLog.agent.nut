@@ -104,8 +104,7 @@ if (backup.len() != 0) {
     settings = backup;
     if ("debug" in settings) debug = settings.debug;
 } else {
-    local result = server.save(settings);
-    if (result != 0) server.error("Could not save application data");
+    if (server.save(settings) != 0) server.error("Could not save application data");
 }
 
 // Set up the app's API
@@ -131,8 +130,9 @@ api.post("/name", function(context) {
         if (data.name != "") {
             settings.locale = data.name;
             context.send(200, { "name" : settings.locale });
-            local result = server.save(settings);
-            if (result != 0) server.error("Could not save application data");
+            
+            // Save the reset settings data on the server
+            if (server.save(settings) != 0) server.error("Could not save application data after POST to /name");
             return;
         }
     }
@@ -157,8 +157,8 @@ api.post("/debug", function(context) {
                 settings.debug <- debug;
             }
 
-            local result = server.save(settings);
-            if (result != 0) server.error("Could not save application data");
+            // Save the reset settings data on the server
+            if (server.save(settings) != 0) server.error("Could not save application data after POST to /debug");
         }
     } catch (err) {
         server.error(err);
@@ -181,8 +181,7 @@ api.get("/clear", function(context) {
     settings.location.loc = parsePlaceData(lcn.placeData);
 
     // Save the reset settings data on the server
-    local result = server.save(settings);
-    if (result != 0) server.error("Could not save application data");
+    if (server.save(settings) != 0) server.error("Could not save application data after GET to /clear");
 });
 
 // GET at /controller/info returns app data for Controller
@@ -194,16 +193,16 @@ api.get("/controller/info", function(context) {
 
 // Register device handler functions
 
-// Register the function to handle data messages from the device
+// Register the function to handle data-bearing messages
 device.on("env.tail.reading", postReading);
 
 // Register the function to handle 'get debug' messages
 device.on("env.tail.get.debug", function(ignore) {
+    // Just send the current value back
     device.send("env.tail.set.debug", debug);
 });
 
 // Handle device readiness notification by determining device location
-// NOTE only do this once per agent runtime as device restarts many times
 device.on("env.tail.device.ready", function(dummy) {
     // Now perform the rest of the set-up
     if (!deviceReady) {
@@ -224,7 +223,7 @@ device.on("env.tail.device.ready", function(dummy) {
             device.send("env.tail.start", debug);
         }.bindenv(this));
     } else {
-        // Send the debug state to the device
+        // Send the debug state to the device and start the reading loop
         device.send("env.tail.start", debug);
     }
 }.bindenv(this));
