@@ -1,5 +1,5 @@
 // Environment Tail Data Log
-// Copyright 2016-18, Tony Smith
+// Copyright 2016-19, Tony Smith
 
 // IMPORTS
 #import "../Location/location.class.nut"
@@ -108,10 +108,10 @@ class Si702x {
 
                 // Convert raw humidity value to relative humidity in percent, clamping the value to 0-100%
                 local humidity = SI702X_RH_MULT * ((rawHumidity[0] << 8) + rawHumidity[1]) + SI702X_RH_ADD;
-                if (humidity < 0) { 
-                    humidity = 0.0; 
-                } else if (humidity > 100) { 
-                    humidity = 100.0; 
+                if (humidity < 0) {
+                    humidity = 0.0;
+                } else if (humidity > 100) {
+                    humidity = 100.0;
                 }
 
                 // Read the temperature reading from the humidity measurement
@@ -120,7 +120,7 @@ class Si702x {
                     callback({"err": "error reading temperature", "temperature": null, "humidity": null});
                     return;
                 }
-                
+
                 // And pass it all to the user's callback
                 callback({"temperature": temp, "humidity": humidity});
             }.bindenv(this));
@@ -148,7 +148,7 @@ function processData(data) {
         // Got data, so connect and send it
         if (!server.isconnected()) server.connect();
         agent.send("env.tail.get.debug", true);
-        
+
         // Create a Squirrel table to hold the data - handy if we
         // later want to package up other data from other sensors
         local sendData = {};

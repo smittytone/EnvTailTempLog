@@ -1,8 +1,8 @@
 // Environment Tail Data Log
-// Copyright 2016-18, Tony Smith
+// Copyright 2016-19, Tony Smith
 
 // IMPORTS
-#require "Rocky.class.nut:2.0.1"
+#require "Rocky.class.nut:2.0.2"
 #import "../Location/location.class.nut"
 
 
@@ -130,7 +130,7 @@ api.post("/name", function(context) {
         if (data.name != "") {
             settings.locale = data.name;
             context.send(200, { "name" : settings.locale });
-            
+
             // Save the reset settings data on the server
             if (server.save(settings) != 0) server.error("Could not save application data after POST to /name");
             return;
