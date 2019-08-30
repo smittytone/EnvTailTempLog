@@ -1,4 +1,4 @@
-# EnvTailTempLog 1.5.2 #
+# EnvTailTempLog 1.5.3 #
 
 A very simple Electric Imp-based environmental temperature/humidity sensor. It is built around the [imp001 card, ‘April’ breakout board](https://developer.electricimp.com/gettingstarted/devkits) and the Environment Sensor Tail (though this is no longer available to buy).
 
@@ -26,6 +26,8 @@ Visit your sensor’s agent URL for a simple control interface:
 
 ## Release Notes ##
 
+- 1.5.3 &mdash; *unreleased*
+    - Update JQuery to 3.4.1, Bootstrap to 4.3.1, Bootmessage to 2.2.2
 - 1.5.2 &mdash; *18 April 2019*
     - Update JQuery to 3.4.0, Rocky to 2.0.2
 - 1.5.1 &mdash; *1 November 2018*
@@ -46,4 +48,4 @@ Visit your sensor’s agent URL for a simple control interface:
 
 EnvTailTempLog is licensed under the terms and conditions of the [MIT Licence](./LICENSE).
 
-Copyright 2016-19 Tony Smith
+Copyright &copy; 2016-19 Tony Smith
