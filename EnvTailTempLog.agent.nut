@@ -2,7 +2,7 @@
 // Copyright 2016-19, Tony Smith
 
 // IMPORTS
-#require "Rocky.class.nut:2.0.2"
+#require "Rocky.agent.lib.nut:3.0.0"
 #import "../Location/location.class.nut"
 
 
@@ -90,7 +90,7 @@ function setDefaults() {
 // locator = Location("<YOUR_GOOGLE_GEOLOCATION_API_KEY>");
 
 // Instantiate objects
-api = Rocky();
+api = Rocky.init();
 
 // Clear saved data on from the server if required
 if (newStart) reset();
