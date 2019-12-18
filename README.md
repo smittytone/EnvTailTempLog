@@ -26,7 +26,7 @@ Visit your sensor’s agent URL for a simple control interface:
 
 ## Release Notes ##
 
-- 1.5.4 *Unreleased*
+- 1.5.4 *18 December 2019*
     - Support Rocky 3.0.0.
 - 1.5.3 *5 September 2019*
     - Update JQuery to 3.4.1, Bootstrap to 4.3.1, Bootmessage to 2.2.2
