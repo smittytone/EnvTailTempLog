@@ -85,7 +85,7 @@ function setDefaults() {
 
 // START OF PROGRAM
 
-#import "~/Dropbox/Programming/Imp/Codes/envtailtemplog.nut"
+#import "~/OneDrive/Programming/EnvTailTempLog/envtailtemplog.nut"
 // To use, un-comment and complete the following line:
 // locator = Location("<YOUR_GOOGLE_GEOLOCATION_API_KEY>");
 
