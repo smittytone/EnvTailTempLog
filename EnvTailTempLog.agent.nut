@@ -18,7 +18,7 @@ const HTML_STRING = @"
 local api = null;
 local locator = null;
 local settings = null;
-local newStart = true;
+local newStart = false;
 local deviceReady = false;
 local debug = true;
 
@@ -219,9 +219,10 @@ api.get("/controller/info", function(context) {
 device.on("env.tail.reading", postReading);
 
 // Register the function to handle 'get debug' messages
-device.on("env.tail.get.debug", function(ignore) {
+device.on("env.tail.get.settings", function(ignore) {
     // Just send the current value back
     device.send("env.tail.set.debug", debug);
+    device.send("env.tail.set.led", settings.led);
 });
 
 // Handle device readiness notification by determining device location

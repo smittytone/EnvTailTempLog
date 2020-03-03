@@ -94,7 +94,7 @@
                                             <input type='checkbox' name='debug' id='debug' value='debug'> Debug Mode
                                         </div>
                                         <div class='led-checkbox' style='color:white;font-family:Open Sans Condensed'>
-                                                <input type='checkbox' name='led' id='led' value='led'> Flash LED on reading
+                                            <input type='checkbox' name='led' id='led' value='led'> Flash LED on reading
                                         </div>
                                         <br />
                                     </div>
@@ -136,8 +136,8 @@
 
         // Set up controls
         $('.update-button button').click(getStateInput);
-        $('#debug').click(setdebug);
-        $('#led').click(setled);
+        $('#debug').click(setDebug);
+        $('#led').click(setLed);
         $('#startstop').click(startTemp);
         $('.showhide').click(function(){ $('.advanced').toggle(); });
         $('.showhidedash').click(function(){
@@ -230,21 +230,21 @@
             });
         }
 
-        function setdebug() {
+        function setDebug() {
             // Tell the device to enter or leave debug mode
-            set('debug', document.getElementById('debug').checked);
+            doSet({'debug': document.getElementById('debug').checked}, '/debug');
         }
 
-        function setled() {
+        function setLed() {
             // Tell the device to show or hide the blue LED on reading
-            set('led', document.getElementById('led').checked);
+            doSet({'led': document.getElementById('led').checked}, '/led');
         }
 
-        function set(path, value) {
+        function doSet(data, path) {
             $.ajax({
-                url : agenturl + '/' + path,
+                url : agenturl + path,
                 type: 'POST',
-                data: JSON.stringify({ path : value }),
+                data: JSON.stringify(data),
                 cache: false
             });
         }

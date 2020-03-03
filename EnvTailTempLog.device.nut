@@ -148,7 +148,7 @@ function processData(data) {
     } else {
         // Got data, so connect and send it
         if (!server.isconnected()) server.connect();
-        agent.send("env.tail.get.debug", true);
+        agent.send("env.tail.get.settings", true);
 
         // Create a Squirrel table to hold the data - handy if we
         // later want to package up other data from other sensors
@@ -213,6 +213,10 @@ tail = Si702x(hardware.i2c89, 0x80);
 led = hardware.pin2;
 led.configure(DIGITAL_OUT, 0);
 
+if ("nv" in getroottable()) {
+    doFlash = nv.flash;
+}
+
 // Allow agent to set the 'debug' flag
 // NOTE This is always called in response to the device's 'ready' message
 agent.on("env.tail.start", function(value) {
@@ -228,6 +232,11 @@ agent.on("env.tail.set.debug", function(value) {
 // Allow agent to set the 'doFlash' flag
 agent.on("env.tail.set.led", function(value) {
     doFlash = value;
+    if (!("nv" in getroottable())) {
+        nv <- { "flash": doFlash };
+    } else {
+        nv.flash = doFlash;
+    }
 });
 
 if (!server.isconnected()) {
