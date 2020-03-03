@@ -18,7 +18,7 @@ const HTML_STRING = @"
 local api = null;
 local locator = null;
 local settings = null;
-local newStart = false;
+local newStart = true;
 local deviceReady = false;
 local debug = true;
 
@@ -65,9 +65,9 @@ function parsePlaceData(data) {
 
 function reset() {
     // Wipe the data stored on the server
-    if (server.save({}) != 0) server.error("Could not clear data");
+    server.save({});
     setDefaults();
-    if (server.save(settings) != 0) server.error("Could not back up data");
+    server.save(settings);
 }
 
 function setDefaults() {
@@ -81,6 +81,7 @@ function setDefaults() {
     settings.location.lng <- 0.0;
     settings.location.loc <- "Unknown";
     settings.debug <- debug;
+    settings.led <- true;
 }
 
 // START OF PROGRAM
@@ -104,7 +105,7 @@ if (backup.len() != 0) {
     settings = backup;
     if ("debug" in settings) debug = settings.debug;
 } else {
-    if (server.save(settings) != 0) server.error("Could not save application data");
+    server.save(settings);
 }
 
 // Set up the app's API
@@ -120,7 +121,8 @@ api.get("/state", function(context) {
                         "name"  : settings.locale,
                         "time"  : time(),
                         "locale": settings.location.loc,
-                        "debug" : debug });
+                        "debug" : debug,
+                        "led"   : settings.led });
 });
 
 api.post("/name", function(context) {
@@ -132,7 +134,7 @@ api.post("/name", function(context) {
             context.send(200, { "name" : settings.locale });
 
             // Save the reset settings data on the server
-            if (server.save(settings) != 0) server.error("Could not save application data after POST to /name");
+            server.save(settings);
             return;
         }
     }
@@ -149,7 +151,7 @@ api.post("/debug", function(context) {
         if ("debug" in data) {
             debug = data.debug;
             server.log("Debug " + (debug ? "enabled" : "disabled"));
-            device.send("env.tail.set.debug", debug);
+            if (deviceReady) device.send("env.tail.set.debug", debug);
 
             if ("debug" in settings) {
                 settings.debug = debug;
@@ -158,7 +160,7 @@ api.post("/debug", function(context) {
             }
 
             // Save the reset settings data on the server
-            if (server.save(settings) != 0) server.error("Could not save application data after POST to /debug");
+            server.save(settings);
         }
     } catch (err) {
         server.error(err);
@@ -167,6 +169,26 @@ api.post("/debug", function(context) {
     }
 
     context.send(200, (debug ? "Debug on" : "Debug off"));
+});
+
+api.post("/led", function(context) {
+    try {
+        local data = http.jsondecode(context.req.rawbody);
+        if ("led" in data) {
+            settings.led = data.led;
+            server.log("Reading LED turned " + (settings.led ? "on" : "off"));
+            if (deviceReady) device.send("env.tail.set.led", settings.led);
+
+            // Save the reset settings data on the server
+            server.save(settings);
+        }
+    } catch (err) {
+        server.error(err);
+        context.send(400, "Bad data posted");
+        return;
+    }
+
+    context.send(200, (settings.led ? "LED on" : "LED off"));
 });
 
 // GET to /clear zaps the settings
@@ -181,7 +203,7 @@ api.get("/clear", function(context) {
     settings.location.loc = parsePlaceData(lcn.placeData);
 
     // Save the reset settings data on the server
-    if (server.save(settings) != 0) server.error("Could not save application data after GET to /clear");
+    server.save(settings);
 });
 
 // GET at /controller/info returns app data for Controller
@@ -216,8 +238,7 @@ device.on("env.tail.device.ready", function(dummy) {
             settings.location.loc = parsePlaceData(lcn.placeData);
 
             // Save the settings data on the server
-            local result = server.save(settings);
-            if (result != 0) server.error("Could not save application data");
+            server.save(settings);
 
             // Send the debug state to the device
             device.send("env.tail.start", debug);

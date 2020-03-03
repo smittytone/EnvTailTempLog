@@ -138,6 +138,7 @@ local tail = null;
 local led = null;
 local locator = null;
 local debug = false;
+local doFlash = true;
 
 
 // FUNCTIONS
@@ -166,7 +167,7 @@ function processData(data) {
             for (local i = 0 ; i < result ; i++) flashLed();
         } else {
             // Flash the LED once to show we've taken a reading -
-            flashLed();
+            if (doFlash) flashLed();
         }
 
         if (debug) {
@@ -222,6 +223,11 @@ agent.on("env.tail.start", function(value) {
 // Allow agent to set the 'debug' flag
 agent.on("env.tail.set.debug", function(value) {
     debug = value;
+});
+
+// Allow agent to set the 'doFlash' flag
+agent.on("env.tail.set.led", function(value) {
+    doFlash = value;
 });
 
 if (!server.isconnected()) {
