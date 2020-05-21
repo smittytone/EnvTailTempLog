@@ -27,7 +27,8 @@ Visit your sensor’s agent URL for a simple control interface:
 ## Release Notes ##
 
 - 1.5.5 *21 May 2020*
-    - Update to JQuery 3.5.x.
+    - Update JQuery to 3.5.x.
+    - Update Bootstrap to 4.5.x.
 - 1.5.4 *18 December 2019*
     - Support Rocky 3.0.0.
 - 1.5.3 *5 September 2019*
