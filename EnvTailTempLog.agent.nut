@@ -1,5 +1,5 @@
 // Environment Tail Data Log
-// Copyright 2016-19, Tony Smith
+// Copyright 2016-20, Tony Smith
 
 // IMPORTS
 #require "Rocky.agent.lib.nut:3.0.0"

@@ -1,5 +1,5 @@
 // Environment Tail Data Log
-// Copyright 2016-19, Tony Smith
+// Copyright 2016-20s, Tony Smith
 
 // IMPORTS
 #import "../Location/location.class.nut"
@@ -200,7 +200,7 @@ function flashLed() {
 
 // START OF PROGRAM
 // Load in generic boot message code
-#include "../generic/bootmessage.nut"
+#include "../generic-squirrel/bootmessage.nut"
 
 // Instance Location
 locator = Location();
