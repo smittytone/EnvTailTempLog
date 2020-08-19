@@ -27,6 +27,8 @@ Visit your sensor’s agent URL for a simple control interface:
 ## Release Notes ##
 
 - 1.5.6 *19 August 2020*
+    - Improve handling of settings.
+    - Don't get device location more often than necessary.
     - Bug fix: incorrect location for Bootmessage library.
 - 1.5.5 *21 May 2020*
     - Update JQuery to 3.5.x.
