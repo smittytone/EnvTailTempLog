@@ -1,5 +1,5 @@
 // Environment Tail Data Log
-// Copyright 2016-20, Tony Smith
+// Copyright 2020, Tony Smith
 
 // IMPORTS
 #require "Rocky.agent.lib.nut:3.0.0"
@@ -80,6 +80,7 @@ function setDefaults() {
     settings.location.lat <- 0.0;
     settings.location.lng <- 0.0;
     settings.location.loc <- "Unknown";
+    settings.location.ts <- 0;
     settings.debug <- debug;
     settings.led <- true;
 }
@@ -104,6 +105,21 @@ local backup = server.load();
 if (backup.len() != 0) {
     settings = backup;
     if ("debug" in settings) debug = settings.debug;
+
+    local doSave = false;
+
+    if (!("led" in settings)) {
+        doSave = true;
+        settings.led <- true;
+    }
+
+    if (!("ts" in settings.location)) {
+        doSave = true;
+        settings.location.ts <- 0;
+    }
+
+    // If missing settings were injected, save the settings now
+    if (doSave) server.save(settings);
 } else {
     server.save(settings);
 }
@@ -227,25 +243,34 @@ device.on("env.tail.get.settings", function(ignore) {
 
 // Handle device readiness notification by determining device location
 device.on("env.tail.device.ready", function(dummy) {
+    // Send the LED state
+    device.send("env.tail.set.led", settings.led);
+
     // Now perform the rest of the set-up
     if (!deviceReady) {
-        locator.locate(true, function() {
-            deviceReady = true;
+        if (settings.location.ts == 0) {
+            locator.locate(true, function() {
+                // Get the location of the device
+                local lcn = locator.getLocation();
+                settings.location.lat = lcn.latitude;
+                settings.location.lng = lcn.longitude;
+                settings.location.loc = parsePlaceData(lcn.placeData);
+                settings.location.ts = time();
 
-            // Get the location of the device
-            local lcn = locator.getLocation();
-            settings.location.lat = lcn.latitude;
-            settings.location.lng = lcn.longitude;
-            settings.location.loc = parsePlaceData(lcn.placeData);
+                // Save the settings data on the server
+                server.save(settings);
+                deviceReady = true;
 
-            // Save the settings data on the server
-            server.save(settings);
+                // Send the debug state to the device
+                device.send("env.tail.start", debug);
+            }.bindenv(this));
 
-            // Send the debug state to the device
-            device.send("env.tail.start", debug);
-        }.bindenv(this));
-    } else {
-        // Send the debug state to the device and start the reading loop
-        device.send("env.tail.start", debug);
+            return;
+        }
+
+        deviceReady = true;
     }
+
+    // Send the debug state to the device and start the reading loop
+    device.send("env.tail.start", debug);
 }.bindenv(this));

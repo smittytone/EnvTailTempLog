@@ -26,33 +26,33 @@ Visit your sensor’s agent URL for a simple control interface:
 
 ## Release Notes ##
 
-- 1.5.6 *Unreleased*
-    - Bug fix: incorrect location for bootmessage.nut library
+- 1.5.6 *19 August 2020*
+    - Bug fix: incorrect location for Bootmessage library.
 - 1.5.5 *21 May 2020*
     - Update JQuery to 3.5.x.
     - Update Bootstrap to 4.5.x.
 - 1.5.4 *18 December 2019*
     - Support Rocky 3.0.0.
 - 1.5.3 *5 September 2019*
-    - Update JQuery to 3.4.1, Bootstrap to 4.3.1, Bootmessage to 2.2.2
+    - Update JQuery to 3.4.1, Bootstrap to 4.3.1, Bootmessage to 2.2.2.
 - 1.5.2 *18 April 2019*
-    - Update JQuery to 3.4.0, Rocky to 2.0.2
+    - Update JQuery to 3.4.0, Rocky to 2.0.2.
 - 1.5.1 *1 November 2018*
-    - Update dependencies
-    - Minor code changes
+    - Update dependencies.
+    - Minor code changes.
 - 1.5.0 *1 August 2018*
-    - Revise charting using Google charts
-    - Remove Dweet and Freeboard support
-    - Update to [Bootstrap 4.1.1](https://getbootstrap.com/)
-        - Update Web UI based on Bootstrap
-        - Separate out Web UI into own file for clarity
-    - Add [DisconnectionManager](https://github.com/smittytone/generic/blob/master/disconnect.nut) support
-    - Upgrade [Rocky](https://developer.electricimp.com/libraries/utilities/rocky) to 2.0.1
+    - Revise charting using Google charts.
+    - Remove Dweet and Freeboard support.
+    - Update to [Bootstrap 4.1.1](https://getbootstrap.com/).
+        - Update Web UI based on Bootstrap.
+        - Separate out Web UI into own file for clarity.
+    - Add [DisconnectionManager](https://github.com/smittytone/generic/blob/master/disconnect.nut) support.
+    - Upgrade [Rocky](https://developer.electricimp.com/libraries/utilities/rocky) to 2.0.1.
     - Update to [JQuery 3.3.1](https://jquery.com)
-    - Prevent Ajax XHR cacheing
+    - Prevent Ajax XHR caching.
 
 ## Licence ##
 
 EnvTailTempLog is licensed under the terms and conditions of the [MIT Licence](./LICENSE).
 
-Copyright &copy; 2016-20 Tony Smith
+Copyright &copy; 2020 Tony Smith
